@@ -1,18 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Inter_Tight } from "next/font/google";
+import { Onest } from "next/font/google";
 import { LanguageProvider } from "@/components/language-provider";
 import { SiteShell } from "@/components/site-shell";
 import { siteUrl } from "@/lib/business";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin", "cyrillic"],
-  display: "swap",
-});
-
-const interTight = Inter_Tight({
-  variable: "--font-inter-tight",
+const onest = Onest({
+  variable: "--font-onest",
   subsets: ["latin", "cyrillic"],
   display: "swap",
 });
@@ -62,8 +56,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" suppressHydrationWarning>
-      <body className={`${inter.variable} ${interTight.variable}`}>
+    <html lang="ru" className={onest.variable} suppressHydrationWarning>
+      <body>
         <LanguageProvider>
           <SiteShell>{children}</SiteShell>
         </LanguageProvider>

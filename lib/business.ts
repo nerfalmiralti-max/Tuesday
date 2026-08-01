@@ -24,7 +24,9 @@ export const business = {
   },
 } as const;
 
+const deploymentHost =
+  process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+
 export const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-  "http://localhost:3000";
-
+  (deploymentHost ? `https://${deploymentHost}` : "http://localhost:3000");
