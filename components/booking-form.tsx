@@ -1,25 +1,25 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, Check, Info, MessageCircle } from "lucide-react";
-import { FormEvent, useMemo, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowUpRight, Info, MessageCircle } from "lucide-react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 import { Reveal } from "@/components/motion-reveal";
 import { useLanguage } from "@/components/language-provider";
+import {
+  buildWhatsAppUrl,
+  localDateString,
+  validateBooking,
+  type BookingFormValues,
+  type BookingValidationError,
+} from "@/lib/booking";
 import { business } from "@/lib/business";
 import type { Language } from "@/lib/i18n";
 
-type FormState = {
-  name: string;
-  phone: string;
-  date: string;
-  time: string;
-  guests: string;
-  comment: string;
-};
+type ErrorState = Partial<
+  Record<keyof BookingFormValues, BookingValidationError>
+>;
 
-type ErrorState = Partial<Record<keyof FormState, string>>;
-
-const initialForm: FormState = {
+const initialForm: BookingFormValues = {
   name: "",
   phone: "",
   date: "",
@@ -27,13 +27,6 @@ const initialForm: FormState = {
   guests: "2",
   comment: "",
 };
-
-function localDateString(date = new Date()) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
 
 function timeOptions() {
   const slots: string[] = [];
@@ -55,58 +48,51 @@ const availableTimes = timeOptions();
 export function BookingPageClient() {
   const { language, setLanguage, dictionary: d } = useLanguage();
   const reduceMotion = useReducedMotion();
-  const [form, setForm] = useState<FormState>(initialForm);
+  const formRef = useRef<HTMLFormElement>(null);
+  const submissionLock = useRef(false);
+  const [form, setForm] = useState<BookingFormValues>(initialForm);
   const [errors, setErrors] = useState<ErrorState>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [isPrepared, setIsPrepared] = useState(false);
   const today = useMemo(() => localDateString(), []);
 
-  const update = (field: keyof FormState, value: string) => {
+  const update = (field: keyof BookingFormValues, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: undefined }));
-    setIsPrepared(false);
   };
 
   const validate = () => {
-    const nextErrors: ErrorState = {};
-    if (form.name.trim().length < 2) nextErrors.name = d.booking.errors.name;
-    if (form.phone.replace(/\D/g, "").length < 10) {
-      nextErrors.phone = d.booking.errors.phone;
+    const result = validateBooking(form, today);
+    setErrors(result.errors);
+    if (result.firstInvalidField) {
+      const firstInvalidField = result.firstInvalidField;
+      window.requestAnimationFrame(() => {
+        formRef.current
+          ?.querySelector<HTMLElement>(`[name="${firstInvalidField}"]`)
+          ?.focus();
+      });
     }
-    if (!form.date || form.date < today) nextErrors.date = d.booking.errors.date;
-    if (!availableTimes.includes(form.time)) nextErrors.time = d.booking.errors.time;
-    setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
+
+    return result.firstInvalidField === null;
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!validate()) return;
+    if (submissionLock.current || !validate()) return;
 
+    submissionLock.current = true;
     setIsLoading(true);
-    const messageDictionary = d.booking.message;
-    const lines = [
-      messageDictionary.title,
-      "",
-      `${messageDictionary.name}: ${form.name.trim()}`,
-      `${messageDictionary.phone}: ${form.phone.trim()}`,
-      `${messageDictionary.date}: ${form.date}`,
-      `${messageDictionary.time}: ${form.time}`,
-      `${messageDictionary.guests}: ${form.guests}`,
-      form.comment.trim()
-        ? `${messageDictionary.comment}: ${form.comment.trim()}`
-        : null,
-      `${messageDictionary.language}: ${language === "ru" ? "Русский" : "Қазақша"}`,
-      "",
-      messageDictionary.footer,
-    ].filter(Boolean);
-    const whatsappUrl = `https://wa.me/${business.whatsapp.number}?text=${encodeURIComponent(lines.join("\n"))}`;
+    const whatsappUrl = buildWhatsAppUrl(
+      language,
+      form,
+      business.whatsapp.number,
+    );
+
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
 
     window.setTimeout(() => {
-      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+      submissionLock.current = false;
       setIsLoading(false);
-      setIsPrepared(true);
-    }, reduceMotion ? 0 : 350);
+    }, reduceMotion ? 200 : 800);
   };
 
   return (
@@ -163,7 +149,7 @@ export function BookingPageClient() {
             </div>
           </div>
 
-          <form className="booking-form" onSubmit={handleSubmit} noValidate>
+          <form ref={formRef} className="booking-form" onSubmit={handleSubmit} noValidate>
             <div className="field field--wide">
               <label htmlFor="guest-name">{d.booking.name}</label>
               <input
@@ -177,7 +163,7 @@ export function BookingPageClient() {
                 aria-invalid={Boolean(errors.name)}
                 aria-describedby={errors.name ? "name-error" : undefined}
               />
-              {errors.name ? <p className="field-error" id="name-error">{errors.name}</p> : null}
+              {errors.name ? <p className="field-error" id="name-error">{d.booking.errors[errors.name]}</p> : null}
             </div>
 
             <div className="field field--wide">
@@ -194,7 +180,7 @@ export function BookingPageClient() {
                 aria-invalid={Boolean(errors.phone)}
                 aria-describedby={errors.phone ? "phone-error" : undefined}
               />
-              {errors.phone ? <p className="field-error" id="phone-error">{errors.phone}</p> : null}
+              {errors.phone ? <p className="field-error" id="phone-error">{d.booking.errors[errors.phone]}</p> : null}
             </div>
 
             <div className="field">
@@ -209,7 +195,7 @@ export function BookingPageClient() {
                 aria-invalid={Boolean(errors.date)}
                 aria-describedby={errors.date ? "date-error" : undefined}
               />
-              {errors.date ? <p className="field-error" id="date-error">{errors.date}</p> : null}
+              {errors.date ? <p className="field-error" id="date-error">{d.booking.errors[errors.date]}</p> : null}
             </div>
 
             <div className="field">
@@ -227,23 +213,24 @@ export function BookingPageClient() {
                   <option value={time} key={time}>{time}</option>
                 ))}
               </select>
-              {errors.time ? <p className="field-error" id="time-error">{errors.time}</p> : null}
+              {errors.time ? <p className="field-error" id="time-error">{d.booking.errors[errors.time]}</p> : null}
             </div>
 
             <div className="field">
               <label htmlFor="booking-guests">{d.booking.guests}</label>
-              <select
+              <input
                 id="booking-guests"
                 name="guests"
+                type="number"
+                inputMode="numeric"
+                min="1"
+                max="20"
                 value={form.guests}
                 onChange={(event) => update("guests", event.target.value)}
-              >
-                {Array.from({ length: 12 }, (_, index) => String(index + 1)).map((count) => (
-                  <option value={count} key={count}>
-                    {d.booking.guestOption.replace("{count}", count)}
-                  </option>
-                ))}
-              </select>
+                aria-invalid={Boolean(errors.guests)}
+                aria-describedby={errors.guests ? "guests-error" : undefined}
+              />
+              {errors.guests ? <p className="field-error" id="guests-error">{d.booking.errors[errors.guests]}</p> : null}
             </div>
 
             <div className="field">
@@ -280,26 +267,8 @@ export function BookingPageClient() {
                 <span>{isLoading ? d.booking.loading : d.booking.submit}</span>
                 <ArrowUpRight size={18} aria-hidden="true" />
               </button>
-              <p>{d.booking.note}</p>
+              <p>{d.booking.helper}</p>
             </div>
-
-            <AnimatePresence>
-              {isPrepared ? (
-                <motion.div
-                  className="booking-success field--wide"
-                  role="status"
-                  initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <Check size={19} aria-hidden="true" />
-                  <div>
-                    <strong>{d.booking.successTitle}</strong>
-                    <p>{d.booking.successBody}</p>
-                  </div>
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
           </form>
         </Reveal>
       </section>

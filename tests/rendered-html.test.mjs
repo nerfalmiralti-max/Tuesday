@@ -30,6 +30,5 @@ test("renders menu and booking routes", async () => {
   assert.equal(menu.status, 200);
   assert.equal(booking.status, 200);
   assert.match(await menu.text(), /Бургер «Аль Капоне»/);
-  assert.match(await booking.text(), /Продолжить в WhatsApp/);
+  assert.match(await booking.text(), /Отправить заявку в WhatsApp/);
 });
-

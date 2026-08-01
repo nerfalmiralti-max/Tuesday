@@ -84,27 +84,16 @@ export const dictionaries = {
       comment: "Комментарий",
       commentPlaceholder: "Пожелания к столу — необязательно",
       language: "Язык обращения",
-      submit: "Продолжить в WhatsApp",
+      submit: "Отправить заявку в WhatsApp",
       loading: "Готовим сообщение…",
-      successTitle: "Запрос подготовлен",
-      successBody:
-        "WhatsApp открыт с готовым сообщением. Отправьте его администратору и дождитесь подтверждения.",
+      helper:
+        "WhatsApp откроется с готовым сообщением. Для отправки нажмите кнопку отправки в WhatsApp. Бронь подтверждается администратором.",
       errors: {
         name: "Укажите имя.",
         phone: "Укажите корректный номер телефона.",
         date: "Выберите дату не раньше сегодняшней.",
         time: "Выберите время с 12:00 до 02:00.",
-      },
-      message: {
-        title: "Запрос на бронирование — Tuesday Lounge Bar",
-        name: "Имя",
-        phone: "Телефон",
-        date: "Дата",
-        time: "Время",
-        guests: "Гостей",
-        comment: "Комментарий",
-        language: "Язык",
-        footer: "Пожалуйста, подтвердите доступность стола.",
+        guests: "Укажите хотя бы одного гостя.",
       },
     },
     footer: {
@@ -195,27 +184,16 @@ export const dictionaries = {
       comment: "Пікір",
       commentPlaceholder: "Үстелге қатысты тілек — міндетті емес",
       language: "Хабарласу тілі",
-      submit: "WhatsApp-та жалғастыру",
+      submit: "Өтінімді WhatsApp-қа жіберу",
       loading: "Хабарлама дайындалуда…",
-      successTitle: "Сұрау дайын",
-      successBody:
-        "WhatsApp дайын хабарламамен ашылды. Оны әкімшіге жіберіп, растауды күтіңіз.",
+      helper:
+        "WhatsApp дайын хабарламамен ашылады. Жіберу үшін WhatsApp ішіндегі жіберу батырмасын басыңыз. Броньды әкімші растайды.",
       errors: {
         name: "Аты-жөніңізді енгізіңіз.",
         phone: "Дұрыс телефон нөмірін енгізіңіз.",
         date: "Бүгіннен ерте емес күнді таңдаңыз.",
         time: "12:00 мен 02:00 аралығындағы уақытты таңдаңыз.",
-      },
-      message: {
-        title: "Үстел броньдау сұрауы — Tuesday Lounge Bar",
-        name: "Аты-жөні",
-        phone: "Телефон",
-        date: "Күні",
-        time: "Уақыты",
-        guests: "Қонақ саны",
-        comment: "Пікір",
-        language: "Тіл",
-        footer: "Бос үстел бар екенін растауыңызды сұраймын.",
+        guests: "Кемінде бір қонақты көрсетіңіз.",
       },
     },
     footer: {
@@ -226,4 +204,3 @@ export const dictionaries = {
 } as const;
 
 export type Dictionary = (typeof dictionaries)[Language];
-

@@ -413,26 +413,18 @@ a {
   color: var(--amber);
 }
 
-.bloom-sequence {
+.steak-sequence {
   position: relative;
-  height: 205svh;
+  height: 195vh;
+  height: 195svh;
 }
 
-.bloom-sticky {
+.steak-sticky {
   position: sticky;
   top: 0;
+  height: 100vh;
   height: 100svh;
   padding: 5.6rem var(--page-pad) 1rem;
-}
-
-.bloom-sequence--reduced {
-  height: auto;
-}
-
-.bloom-sequence--reduced .bloom-sticky {
-  position: relative;
-  height: auto;
-  min-height: 100svh;
 }
 
 .hero-panel {
@@ -454,11 +446,11 @@ a {
   color: var(--warm);
 }
 
-.bloom-hero-panel {
+.steak-hero-panel {
   height: 100%;
 }
 
-.bloom-hero-content-layer {
+.steak-hero-content-layer {
   position: relative;
   z-index: 5;
   display: flex;
@@ -489,113 +481,89 @@ a {
   letter-spacing: 0.16em;
 }
 
-.bloom-central-glow {
+.steak-central-glow {
   position: absolute;
-  z-index: 1;
-  top: 54%;
-  left: 50%;
-  width: min(45vw, 680px);
-  aspect-ratio: 1;
-  border-radius: 50%;
+  z-index: 4;
+  inset: 12% 4% 10% 42%;
   pointer-events: none;
-  background: radial-gradient(circle, rgba(213, 166, 108, 0.4) 0, rgba(182, 132, 77, 0.13) 28%, transparent 68%);
-  filter: blur(20px);
-  transform: translate(-50%, -50%);
-  transform-origin: center;
-  will-change: transform, opacity;
+  background: radial-gradient(ellipse, rgba(213, 166, 108, 0.42), rgba(182, 132, 77, 0.12) 34%, transparent 70%);
+  filter: blur(18px);
 }
 
-.bloom-petal-field {
+.steak-visual,
+.steak-base,
+.steak-segments,
+.steak-segment,
+.steak-image-shade {
   position: absolute;
-  z-index: 2;
   inset: 0;
+}
+
+.steak-visual {
+  z-index: 2;
   overflow: hidden;
   pointer-events: none;
+  background: #0c0b09;
 }
 
-.bloom-petal-anchor {
-  --petal-width: clamp(8rem, 19vw, 21rem);
-  --petal-height: clamp(22rem, 66vh, 46rem);
-  position: absolute;
-  top: 54%;
-  left: 50%;
-  width: var(--petal-width);
-  height: var(--petal-height);
-  transform: translate(-50%, -50%);
+.steak-base {
+  z-index: 1;
 }
 
-.bloom-petal {
-  position: relative;
+.steak-base-image {
+  object-fit: cover;
+  object-position: 52% 50%;
+  filter: saturate(0.92) contrast(1.06) brightness(0.84);
+}
+
+.steak-segments {
+  z-index: 2;
+}
+
+.steak-segments--mobile {
+  display: none;
+}
+
+.steak-segment {
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  border: 1px solid rgba(241, 239, 233, 0.16);
-  border-radius: 52% 48% 38% 62% / 18% 18% 82% 82%;
-  clip-path: polygon(48% 0, 66% 5%, 96% 36%, 84% 78%, 51% 100%, 17% 79%, 4% 37%, 34% 5%);
-  box-shadow: inset 0 0 42px rgba(241, 239, 233, 0.025), 0 24px 70px rgba(0, 0, 0, 0.3);
-  will-change: transform, opacity, filter;
+  pointer-events: none;
+  background-image: url("/images/steak-hero.webp");
+  background-repeat: no-repeat;
+  background-position: 52% 50%;
+  background-size: cover;
+  filter: saturate(0.92) contrast(1.06) brightness(0.84);
+  transform-origin: 52% 52%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
 }
 
-.bloom-petal > span {
-  position: absolute;
-  top: 8%;
-  bottom: 8%;
-  left: 50%;
-  width: 1px;
-  background: linear-gradient(transparent, rgba(241, 239, 233, 0.24), rgba(182, 132, 77, 0.3), transparent);
+.steak-image-shade {
+  z-index: 8;
+  background:
+    linear-gradient(90deg, rgba(9, 9, 9, 0.94) 0%, rgba(9, 9, 9, 0.78) 26%, rgba(9, 9, 9, 0.25) 58%, rgba(9, 9, 9, 0.12) 100%),
+    linear-gradient(0deg, rgba(9, 9, 9, 0.52), transparent 44%);
 }
 
-.bloom-petal--ink {
-  background: linear-gradient(145deg, #0d0e0f, #202124 65%, #111213);
-}
-
-.bloom-petal--charcoal {
-  background: linear-gradient(145deg, #17181a, #2a2b2d 58%, #121315);
-}
-
-.bloom-petal--warm {
-  background: linear-gradient(150deg, #20201f, #4a443d 56%, #191a1b);
-}
-
-.bloom-petal--amber {
-  background: linear-gradient(150deg, #151515, #6e4a2d 54%, #1a1715);
-}
-
-.bloom-core {
-  position: absolute;
-  z-index: 3;
-  top: 54%;
-  left: 50%;
-  display: grid;
-  width: clamp(3.5rem, 7vw, 7.5rem);
-  aspect-ratio: 1;
-  place-items: center;
-  border: 1px solid rgba(241, 239, 233, 0.24);
-  border-radius: 50%;
-  background: rgba(17, 18, 19, 0.82);
-  color: var(--warm);
-  font-size: clamp(1rem, 2vw, 2rem);
-  font-weight: 760;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 48px rgba(182, 132, 77, 0.32);
-}
-
-.bloom-reveal-surface {
+.steak-handoff {
   position: absolute;
   z-index: 3;
   inset: 0;
   display: grid;
   place-items: center;
   padding: var(--page-pad);
+  pointer-events: none;
   background: var(--editorial);
   color: var(--ink);
 }
 
-.bloom-reveal-surface > div {
+.steak-handoff > div {
   width: min(1040px, 88vw);
 }
 
-.bloom-reveal-surface span {
+.steak-handoff span {
   display: block;
   margin-bottom: 1.5rem;
   color: var(--amber);
@@ -604,7 +572,7 @@ a {
   letter-spacing: 0.08em;
 }
 
-.bloom-reveal-surface p {
+.steak-handoff p {
   margin: 0;
   font-size: var(--type-editorial);
   font-weight: 690;
@@ -613,7 +581,7 @@ a {
   text-wrap: balance;
 }
 
-.bloom-progress {
+.steak-progress {
   position: absolute;
   z-index: 7;
   right: clamp(1rem, 2.4vw, 2.4rem);
@@ -626,7 +594,7 @@ a {
   letter-spacing: 0.12em;
 }
 
-.bloom-progress i {
+.steak-progress i {
   position: relative;
   display: block;
   width: clamp(70px, 8vw, 120px);
@@ -635,17 +603,12 @@ a {
   background: var(--line-light);
 }
 
-.bloom-progress b {
+.steak-progress b {
   position: absolute;
   inset: 0;
   display: block;
   background: var(--amber-bright);
   transform-origin: left;
-}
-
-.bloom-sequence--reduced .bloom-petal-anchor--outer,
-.bloom-sequence--reduced .bloom-progress {
-  display: none;
 }
 
 .hero-panel::after,
@@ -1668,33 +1631,6 @@ a {
   line-height: 1.5;
 }
 
-.booking-success {
-  display: flex;
-  gap: 0.8rem;
-  margin-top: 0.5rem;
-  padding: 1rem;
-  border: 1px solid rgba(93,116,72,0.3);
-  border-radius: 10px;
-  background: rgba(93,116,72,0.08);
-}
-
-.booking-success svg {
-  flex: 0 0 auto;
-  color: #5d7448;
-}
-
-.booking-success strong {
-  display: block;
-  font-size: 0.8rem;
-}
-
-.booking-success p {
-  margin: 0.25rem 0 0;
-  color: var(--muted-dark);
-  font-size: 0.72rem;
-  line-height: 1.5;
-}
-
 @media (max-width: 1024px) {
   .desktop-nav {
     gap: 1.1rem;
@@ -1758,9 +1694,10 @@ a {
     grid-template-columns: 20% 1fr;
   }
 
-  .bloom-petal-anchor {
-    --petal-width: clamp(8rem, 22vw, 15rem);
-    --petal-height: clamp(21rem, 60vh, 36rem);
+  .steak-base-image,
+  .steak-segment {
+    object-position: 58% 50%;
+    background-position: 58% 50%;
   }
 }
 
@@ -1796,38 +1733,40 @@ a {
     display: grid;
   }
 
-  .bloom-sticky,
+  .steak-sticky,
   .inner-page {
     padding-top: 4.65rem;
   }
 
-  .bloom-sequence {
-    height: 185svh;
+  .steak-sequence {
+    height: 165vh;
+    height: 165svh;
   }
 
-  .bloom-sequence--reduced {
-    height: auto;
-  }
-
-  .bloom-petal-anchor {
-    --petal-width: clamp(7rem, 41vw, 11rem);
-    --petal-height: clamp(19rem, 49vh, 28rem);
-  }
-
-  .bloom-petal-anchor--outer {
+  .steak-segments--desktop {
     display: none;
   }
 
-  .bloom-central-glow {
-    width: 85vw;
-    filter: blur(12px);
+  .steak-segments--mobile {
+    display: block;
   }
 
-  .bloom-reveal-surface > div {
+  .steak-base-image,
+  .steak-segment {
+    object-position: 63% 50%;
+    background-position: 63% 50%;
+  }
+
+  .steak-central-glow {
+    inset: 24% -12% 17% 35%;
+    filter: blur(10px);
+  }
+
+  .steak-handoff > div {
     width: 88vw;
   }
 
-  .bloom-progress {
+  .steak-progress {
     right: 1rem;
     bottom: 5.1rem;
   }
@@ -2223,15 +2162,97 @@ a {
 
   .field,
   .field--wide,
-  .form-submit,
-  .booking-success {
+  .form-submit {
     grid-column: 1;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape),
+  (max-height: 520px) and (orientation: landscape) {
+  .steak-sequence {
+    height: 150vh;
+    height: 150svh;
+  }
+
+  .steak-sticky {
+    padding-top: 4.25rem;
+  }
+
+  .hero-panel {
+    min-height: calc(100svh - 4.75rem);
+    padding-bottom: 3.8rem;
+  }
+
+  .hero-content {
+    padding: 5vh 0 2vh;
+  }
+
+  .hero-title {
+    font-size: clamp(2.6rem, 7vw, 4.5rem);
+  }
+
+  .hero-copy-row {
+    margin-top: 0.9rem;
+  }
+
+  .hero-copy-row > p {
+    display: none;
+  }
+
+  .steak-segments--desktop {
+    display: none;
+  }
+
+  .steak-segments--mobile {
+    display: block;
+  }
+
+  .steak-base-image,
+  .steak-segment {
+    object-position: 63% 50%;
+    background-position: 63% 50%;
+  }
+
+  .steak-progress {
+    bottom: 3.7rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .steak-sequence {
+    height: auto;
+  }
+
+  .steak-sticky {
+    position: relative;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+
+  .steak-segments,
+  .steak-handoff,
+  .steak-progress {
+    display: none;
+  }
+
+  .steak-base,
+  .steak-hero-content-layer,
+  .hero-meta {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .steak-image-shade {
+    opacity: 0.42 !important;
+  }
+
+  .steak-central-glow {
+    opacity: 0.18 !important;
   }
 
   *,
@@ -2367,7 +2388,6 @@ html[lang="kk"] .hero-title {
 .type-body-small,
 .booking-note p,
 .form-submit > p,
-.booking-success p,
 .field-error {
   font-size: var(--type-body-small);
   line-height: 1.5;
@@ -2426,8 +2446,7 @@ html[lang="kk"] .hero-title {
 .footer-wordmark,
 .hero-brand-lockup,
 .final-word,
-.about-number,
-.bloom-core {
+.about-number {
   font-family: var(--font-sans);
 }
 

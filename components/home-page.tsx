@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { BloomHero } from "@/components/bloom-hero";
+import { SteakRevealHero } from "@/components/steak-reveal-hero";
 import { Reveal } from "@/components/motion-reveal";
 import { CtaLink } from "@/components/site-shell";
 import { useLanguage } from "@/components/language-provider";
@@ -14,7 +14,7 @@ export function HomePage() {
 
   return (
     <>
-      <BloomHero />
+      <SteakRevealHero />
 
       <section id="statement" className="statement-section section-light">
         <Reveal className="statement-grid">
