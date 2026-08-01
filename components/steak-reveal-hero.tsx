@@ -164,6 +164,16 @@ export function SteakRevealHero() {
     [0, stages.complete, stages.separation, 0.6, 0.7, stages.handoff],
     [1, 1, 1, 0.5, 0, 0],
   );
+  const visualScale = useTransform(
+    scrollYProgress,
+    [0, stages.separation, stages.open, stages.handoff],
+    [1, 1.018, 1.025, 1.025],
+  );
+  const visualY = useTransform(
+    scrollYProgress,
+    [0, stages.separation, stages.open, stages.handoff],
+    [0, -8, -12, -12],
+  );
   const imageShadeOpacity = useTransform(
     scrollYProgress,
     [0, stages.separation, stages.open, stages.handoff],
@@ -188,6 +198,11 @@ export function SteakRevealHero() {
     scrollYProgress,
     [0, stages.complete, stages.separation, stages.open, stages.handoff],
     [0.16, 0.22, 0.48, 0.28, 0],
+  );
+  const steamOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.14, stages.separation, 0.64, 0.76, stages.handoff],
+    [0.24, 0.34, 0.48, 0.2, 0, 0],
   );
   const handoffOpacity = useTransform(
     scrollYProgress,
@@ -223,13 +238,16 @@ export function SteakRevealHero() {
             </motion.div>
           </motion.div>
 
-          <div className="steak-visual">
+          <motion.div
+            className="steak-visual"
+            style={reduceMotion ? undefined : { scale: visualScale, y: visualY }}
+          >
             <motion.div
               className="steak-base"
               style={reduceMotion ? undefined : { opacity: baseOpacity }}
             >
               <Image
-                src="/images/steak-hero.webp"
+                src="/images/tuesday-steak-hero.webp"
                 alt={
                   language === "ru"
                     ? "Стейк на чёрном камне в тёплом ресторанном свете"
@@ -269,7 +287,52 @@ export function SteakRevealHero() {
               style={reduceMotion ? undefined : { opacity: imageShadeOpacity }}
               aria-hidden="true"
             />
-          </div>
+
+            <motion.div
+              className="steak-steam"
+              style={reduceMotion ? undefined : { opacity: steamOpacity }}
+              aria-hidden="true"
+            >
+              <svg viewBox="0 0 160 150" focusable="false">
+                <defs>
+                  <linearGradient id="steak-steam-tone" x1="0" y1="1" x2="0" y2="0">
+                    <stop offset="0" stopColor="#e8dcc8" stopOpacity="0" />
+                    <stop offset="0.32" stopColor="#f2e8d8" stopOpacity="0.56" />
+                    <stop offset="0.74" stopColor="#eee5d8" stopOpacity="0.22" />
+                    <stop offset="1" stopColor="#eee5d8" stopOpacity="0" />
+                  </linearGradient>
+                  <filter id="steak-steam-distortion" x="-60%" y="-30%" width="220%" height="170%">
+                    <feTurbulence
+                      type="fractalNoise"
+                      baseFrequency="0.018 0.055"
+                      numOctaves="2"
+                      seed="12"
+                      result="steam-noise"
+                    />
+                    <feDisplacementMap
+                      in="SourceGraphic"
+                      in2="steam-noise"
+                      scale="7"
+                      xChannelSelector="R"
+                      yChannelSelector="G"
+                    />
+                    <feGaussianBlur stdDeviation="2.4" />
+                  </filter>
+                </defs>
+                <g
+                  fill="none"
+                  stroke="url(#steak-steam-tone)"
+                  strokeLinecap="round"
+                  filter="url(#steak-steam-distortion)"
+                >
+                  <path className="steak-steam-path steak-steam-path--1" d="M34 139 C22 116 53 103 40 82 C26 60 56 43 47 18" strokeWidth="8" />
+                  <path className="steak-steam-path steak-steam-path--2" d="M70 142 C82 118 55 105 72 83 C89 61 62 43 77 13" strokeWidth="7" />
+                  <path className="steak-steam-path steak-steam-path--3" d="M107 139 C94 118 121 103 108 78 C97 57 128 41 120 18" strokeWidth="8" />
+                  <path className="steak-steam-path steak-steam-path--4" d="M136 143 C150 122 126 105 141 86 C154 68 135 51 146 28" strokeWidth="6" />
+                </g>
+              </svg>
+            </motion.div>
+          </motion.div>
 
           <motion.div
             className="steak-central-glow"

@@ -504,6 +504,7 @@ a {
   overflow: hidden;
   pointer-events: none;
   background: #0c0b09;
+  transform-origin: 62% 58%;
 }
 
 .steak-base {
@@ -528,7 +529,7 @@ a {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  background-image: url("/images/steak-hero.webp");
+  background-image: url("/images/tuesday-steak-hero.webp");
   background-repeat: no-repeat;
   background-position: 52% 50%;
   background-size: cover;
@@ -538,6 +539,64 @@ a {
   -webkit-mask-size: 100% 100%;
   mask-repeat: no-repeat;
   mask-size: 100% 100%;
+}
+
+.steak-steam {
+  position: absolute;
+  z-index: 10;
+  top: 3%;
+  right: 7%;
+  width: min(44vw, 670px);
+  height: min(58vh, 560px);
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout paint;
+}
+
+.steak-steam svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.steak-steam-path {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: steak-steam-rise 7.2s cubic-bezier(0.42, 0, 0.3, 1) infinite;
+}
+
+.steak-steam-path--2 {
+  animation-duration: 8.6s;
+  animation-delay: -3.2s;
+}
+
+.steak-steam-path--3 {
+  animation-duration: 6.4s;
+  animation-delay: -5.1s;
+}
+
+.steak-steam-path--4 {
+  animation-duration: 9s;
+  animation-delay: -1.8s;
+}
+
+@keyframes steak-steam-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(-2px, 14px, 0) scale(0.88, 0.82);
+  }
+  22% {
+    opacity: 0.34;
+  }
+  62% {
+    opacity: 0.22;
+    transform: translate3d(4px, -8px, 0) scale(1.04, 1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-5px, -34px, 0) scale(1.14, 1.24);
+  }
 }
 
 .steak-image-shade {
@@ -1757,6 +1816,21 @@ a {
     background-position: 63% 50%;
   }
 
+  .steak-steam {
+    top: 16%;
+    right: -2%;
+    width: 70vw;
+    height: 42vh;
+  }
+
+  .steak-steam-path {
+    filter: blur(0.5px);
+  }
+
+  .steak-steam-path--4 {
+    display: none;
+  }
+
   .steak-central-glow {
     inset: 24% -12% 17% 35%;
     filter: blur(10px);
@@ -2253,6 +2327,20 @@ a {
 
   .steak-central-glow {
     opacity: 0.18 !important;
+  }
+
+  .steak-steam {
+    opacity: 0.14 !important;
+  }
+
+  .steak-steam-path {
+    animation: none !important;
+    opacity: 0.16;
+    transform: none;
+  }
+
+  .steak-steam-path:not(.steak-steam-path--2) {
+    display: none;
   }
 
   *,
