@@ -207,6 +207,7 @@ function Footer() {
       </div>
       <div className="footer-bottom">
         <span>© {new Date().getFullYear()} {d.footer.rights}</span>
+        <span>Created by Altair</span>
         <a href={business.map} target="_blank" rel="noreferrer">
           {language === "ru" ? business.address.ru : business.address.kk}
           <ArrowUpRight size={14} aria-hidden="true" />
