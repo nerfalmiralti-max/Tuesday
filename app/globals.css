@@ -2649,3 +2649,702 @@ html[lang="kk"] .hero-title {
     line-height: 1.52;
   }
 }
+
+/* ============================================================
+   Menu page — full catalog, popular block, promotion, catalog
+   ============================================================ */
+
+/* Shared price treatment */
+.dish-item-price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.12em;
+  font-family: var(--font-inter-tight), sans-serif;
+  font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.dish-item-price i {
+  font-style: normal;
+  font-size: 0.72em;
+  color: var(--amber);
+}
+
+.dish-item-price em {
+  font-style: normal;
+  font-size: 0.6em;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--muted-dark);
+  text-transform: lowercase;
+}
+
+.dish-item-price--soon {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--muted-dark);
+}
+
+/* Popular dishes (cinematic) */
+.menu-popular {
+  padding: clamp(5rem, 10vw, 9rem) 0 clamp(2rem, 4vw, 3rem);
+}
+
+.menu-popular-inner {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+
+.menu-popular-head {
+  max-width: 720px;
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+.menu-popular-head .eyebrow {
+  color: var(--amber);
+}
+
+.menu-popular-head h2 {
+  margin: 1rem 0 0;
+}
+
+.menu-popular-note {
+  max-width: 40ch;
+  margin: 1.2rem 0 0;
+  color: var(--muted-dark);
+  line-height: 1.55;
+}
+
+.menu-popular-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(0.75rem, 1.5vw, 1.1rem);
+}
+
+.popular-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(2.5rem, 5vw, 4rem);
+  min-height: clamp(240px, 26vw, 340px);
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--ink);
+  color: var(--warm);
+  will-change: transform;
+}
+
+.popular-card-index {
+  color: var(--amber);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.popular-card-glow {
+  position: absolute;
+  z-index: -1;
+  right: -30%;
+  bottom: -35%;
+  width: 90%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(213, 166, 108, 0.22), transparent 62%);
+  opacity: 0.85;
+  transition: opacity 0.4s var(--ease-out), transform 0.5s var(--ease-out);
+}
+
+.popular-card:hover .popular-card-glow {
+  opacity: 1;
+  transform: translate(-6%, -6%) scale(1.08);
+}
+
+.popular-card h3 {
+  margin: 0;
+  font-family: var(--font-inter-tight), sans-serif;
+  font-size: clamp(1.3rem, 1.8vw, 1.7rem);
+  font-weight: 540;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.popular-card-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line-light);
+}
+
+.popular-card .dish-item-price {
+  color: var(--warm);
+}
+
+.popular-card .dish-item-price i {
+  color: var(--amber-bright);
+}
+
+.popular-card-mark {
+  color: rgba(241, 239, 233, 0.35);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+}
+
+/* Daytime hookah promotion */
+.menu-offer {
+  padding: clamp(2rem, 4vw, 3.5rem) 0;
+}
+
+.menu-offer-panel {
+  position: relative;
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: clamp(1.75rem, 3.5vw, 3.5rem);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--ink);
+  color: var(--warm);
+}
+
+.menu-offer-glow {
+  position: absolute;
+  z-index: -2;
+  top: -20%;
+  right: -5%;
+  width: min(60vw, 640px);
+  aspect-ratio: 1.3;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(213, 166, 108, 0.2), transparent 60%);
+  filter: blur(2px);
+}
+
+.menu-offer-sweep {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgba(241, 239, 233, 0.08) 48%,
+    rgba(213, 166, 108, 0.1) 52%,
+    transparent 62%
+  );
+  transform: translateX(-120%);
+  animation: menu-offer-sweep 7.5s var(--ease-out) 1.2s infinite;
+}
+
+@keyframes menu-offer-sweep {
+  0% {
+    transform: translateX(-120%);
+  }
+  55%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+.menu-offer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line-light);
+  color: var(--muted-light);
+}
+
+.menu-offer-top .eyebrow {
+  color: var(--amber-bright);
+}
+
+.menu-offer-body {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 4rem);
+  padding: clamp(2rem, 4vw, 3.5rem) 0 clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.menu-offer-price {
+  display: flex;
+  align-items: flex-start;
+  font-family: var(--font-inter-tight), sans-serif;
+  font-size: clamp(4.5rem, 12vw, 11rem);
+  font-weight: 580;
+  line-height: 0.76;
+  letter-spacing: -0.07em;
+}
+
+.menu-offer-price sup {
+  margin: 0.2em 0 0 0.12em;
+  color: var(--amber-bright);
+  font-size: 0.2em;
+}
+
+.menu-offer-copy {
+  max-width: 34rem;
+}
+
+.menu-offer-copy h2 {
+  margin: 0;
+  font-size: clamp(2rem, 3.8vw, 3.4rem);
+}
+
+.menu-offer-copy h2 em {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--amber-bright);
+  font-style: normal;
+  font-size: 0.5em;
+  font-weight: 480;
+  letter-spacing: -0.01em;
+}
+
+.menu-offer-copy p {
+  margin: 1.5rem 0 2rem;
+  color: var(--muted-light);
+  line-height: 1.6;
+}
+
+.menu-offer-code {
+  position: absolute;
+  right: 1.75rem;
+  bottom: 1.25rem;
+  color: rgba(241, 239, 233, 0.28);
+  letter-spacing: 0.14em;
+}
+
+/* Full catalog */
+.menu-catalog-v2 {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: clamp(4rem, 8vw, 7rem) 0 clamp(2rem, 4vw, 3rem);
+}
+
+.catalog-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.catalog-head-copy .eyebrow {
+  color: var(--amber);
+}
+
+.catalog-head-copy h2 {
+  margin: 0.75rem 0 0;
+}
+
+.catalog-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: min(340px, 100%);
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--line-dark);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.35);
+  color: var(--muted-dark);
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.catalog-search:focus-within {
+  border-color: var(--ink);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.catalog-search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+}
+
+.catalog-search input::placeholder {
+  color: var(--muted-dark);
+}
+
+.catalog-search input:focus {
+  outline: none;
+}
+
+.catalog-search button {
+  display: grid;
+  place-items: center;
+  padding: 0.15rem;
+  border-radius: 50%;
+  color: var(--muted-dark);
+  transition: color 0.2s ease;
+}
+
+.catalog-search button:hover {
+  color: var(--ink);
+}
+
+.category-bar {
+  position: sticky;
+  top: 4.6rem;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2rem;
+  margin: 0 calc(var(--page-pad) * -1);
+  padding: 0.9rem var(--page-pad);
+  background: color-mix(in srgb, var(--editorial) 82%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line-dark);
+  transition: opacity 0.3s ease;
+}
+
+.category-bar--dim {
+  opacity: 0.45;
+}
+
+.category-group {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.category-group-label {
+  flex-shrink: 0;
+  color: var(--amber);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.category-chips {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.category-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.category-chip {
+  position: relative;
+  flex-shrink: 0;
+  padding: 0.4rem 0.2rem 0.55rem;
+  color: var(--muted-dark);
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.25s ease;
+}
+
+.category-chip:hover {
+  color: var(--ink);
+}
+
+.category-chip.is-active {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.category-chip-underline {
+  position: absolute;
+  left: 0.2rem;
+  right: 0.2rem;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--amber);
+}
+
+.category-stage {
+  padding-top: clamp(2rem, 4vw, 3.25rem);
+}
+
+.category-panel-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0 0 1.5rem;
+  color: var(--amber);
+}
+
+.category-panel-title span {
+  color: var(--muted-dark);
+}
+
+.dish-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dish-item {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.75rem 1.25rem;
+  padding: clamp(1.1rem, 2vw, 1.6rem) 0;
+  border-top: 1px solid var(--line-dark);
+  will-change: transform;
+}
+
+.dish-item:last-child {
+  border-bottom: 1px solid var(--line-dark);
+}
+
+.dish-item-index {
+  color: var(--amber);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.dish-item-body {
+  min-width: 0;
+}
+
+.dish-item-body h3 {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin: 0;
+  font-family: var(--font-inter-tight), sans-serif;
+  font-size: clamp(1.15rem, 1.9vw, 1.6rem);
+  font-weight: 520;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.dish-item-volume {
+  color: var(--muted-dark);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.dish-item-badge {
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--amber);
+  border-radius: 999px;
+  color: var(--amber);
+  font-family: var(--font-sans);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dish-item-desc {
+  max-width: 52ch;
+  margin: 0.5rem 0 0;
+  color: var(--muted-dark);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.dish-item-leader {
+  align-self: center;
+  height: 1px;
+  border-bottom: 1px dotted var(--line-dark);
+  opacity: 0;
+}
+
+.dish-item-price {
+  color: var(--ink);
+}
+
+.menu-empty {
+  padding: clamp(3rem, 7vw, 5rem) 0;
+  text-align: center;
+}
+
+.menu-empty p {
+  margin: 0;
+  font-family: var(--font-inter-tight), sans-serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 520;
+  letter-spacing: -0.03em;
+}
+
+.menu-empty span {
+  display: block;
+  margin-top: 0.75rem;
+  color: var(--muted-dark);
+  font-size: 0.85rem;
+}
+
+.menu-service-note {
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  color: var(--muted-dark);
+  letter-spacing: 0.02em;
+}
+
+/* Reservation CTA + contact */
+.menu-reserve {
+  margin: clamp(3rem, 6vw, 5rem) calc(var(--page-pad) * -1) 0;
+  padding: clamp(5rem, 10vw, 9rem) var(--page-pad);
+  background: var(--ink-soft);
+  color: var(--warm);
+}
+
+.menu-reserve-inner {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: clamp(2.5rem, 6vw, 6rem);
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+
+.menu-reserve-copy .eyebrow {
+  color: var(--amber-bright);
+}
+
+.menu-reserve-copy h2 {
+  max-width: 18ch;
+  margin: 1.25rem 0 0;
+}
+
+.menu-reserve-copy > p:not(.eyebrow) {
+  max-width: 40ch;
+  margin: 1.75rem 0 2.25rem;
+  color: var(--muted-light);
+  line-height: 1.6;
+}
+
+.menu-reserve-actions,
+.menu-reserve-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.menu-reserve-contact {
+  align-self: end;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line-light);
+}
+
+.menu-reserve-contact > p:first-child {
+  margin: 0 0 0.75rem;
+  color: var(--amber-bright);
+}
+
+.menu-reserve-contact > p:not(:first-child) {
+  margin: 0 0 1.5rem;
+  color: var(--muted-light);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+/* Home popular price */
+.dish-price {
+  justify-self: end;
+  color: var(--muted-dark);
+  font-family: var(--font-inter-tight), sans-serif;
+  font-size: clamp(0.95rem, 1.4vw, 1.35rem);
+  font-weight: 560;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* Menu responsive */
+@media (max-width: 1024px) {
+  .menu-popular-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .menu-offer-body {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .menu-reserve-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-reserve-contact {
+    align-self: start;
+  }
+}
+
+@media (max-width: 768px) {
+  .category-bar {
+    top: 3.65rem;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .category-group {
+    align-items: baseline;
+  }
+
+  .dish-item {
+    grid-template-columns: 1.6rem minmax(0, 1fr);
+    gap: 0.35rem 0.75rem;
+  }
+
+  .dish-item-leader {
+    display: none;
+  }
+
+  .dish-item .dish-item-price {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 0.35rem;
+  }
+
+  .menu-offer-price {
+    font-size: clamp(5rem, 26vw, 8rem);
+  }
+
+  .catalog-head {
+    align-items: stretch;
+  }
+
+  .catalog-search {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-popular-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Menu reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .menu-offer-sweep {
+    animation: none;
+    opacity: 0;
+  }
+
+  .popular-card-glow {
+    transition: none;
+  }
+}

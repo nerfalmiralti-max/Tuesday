@@ -6,7 +6,7 @@ import { Reveal } from "@/components/motion-reveal";
 import { CtaLink } from "@/components/site-shell";
 import { useLanguage } from "@/components/language-provider";
 import { business } from "@/lib/business";
-import { menuItems } from "@/lib/menu";
+import { formatPrice, popularItems } from "@/lib/menu";
 
 export function HomePage() {
   const { language, dictionary: d } = useLanguage();
@@ -34,7 +34,7 @@ export function HomePage() {
         </Reveal>
 
         <div className="dish-list">
-          {menuItems.map((item, index) => (
+          {popularItems.map((item, index) => (
             <Reveal key={item.id} delay={index * 0.06}>
               <motion.article
                 className="dish-row"
@@ -43,9 +43,15 @@ export function HomePage() {
               >
                 <span className="dish-number type-caption">0{index + 1}</span>
                 <h3 className="type-menu-item">{item.name[language]}</h3>
-                <div className="dish-orbit" aria-hidden="true">
-                  <span />
-                </div>
+                {item.price !== null ? (
+                  <span className="dish-price type-caption">
+                    {formatPrice(item.price)} {d.common.currency}
+                  </span>
+                ) : (
+                  <div className="dish-orbit" aria-hidden="true">
+                    <span />
+                  </div>
+                )}
                 <span className="dish-mark type-caption">TUE</span>
               </motion.article>
             </Reveal>
