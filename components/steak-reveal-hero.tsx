@@ -3,28 +3,24 @@
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowUpRight, Clock3, MapPin } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLanguage } from "@/components/language-provider";
 import { CtaLink } from "@/components/site-shell";
 import { business } from "@/lib/business";
 
-const INTRO_KEY = "tuesday-steak-intro-seen-v2";
+const INTRO_KEY = "tuesday-steak-intro-seen-v3";
 const IMAGE_SRC = "/images/tuesday-steak-hero.webp";
-// Full entrance duration (unfold + assembly + sweep). Kept ~1.5–2.1s.
-const INTRO_MS = 1650;
 
-type Phase = "loading" | "intro" | "done";
-
-// Organic wedges radiating from the steak's focal point — assemble seamlessly.
-const petals = [1, 2, 3, 4, 5, 6] as const;
+type Phase = "loading" | "done";
+type Reveal = "full" | "instant";
 
 export function SteakRevealHero() {
   const { language, dictionary: d } = useLanguage();
   const reduceMotion = useReducedMotion();
-  const sectionRef = useRef<HTMLElement>(null);
   const [phase, setPhase] = useState<Phase>("loading");
+  const [reveal, setReveal] = useState<Reveal>("full");
 
-  // Decide the entrance once (client only) — never navigates, only reveals.
+  // Decide the entrance once (client only). Never navigates — it only reveals.
   useEffect(() => {
     let seen = false;
     try {
@@ -37,34 +33,16 @@ export function SteakRevealHero() {
       try {
         window.sessionStorage.setItem(INTRO_KEY, "1");
       } catch {
-        // Storage unavailable — still play once, just don't remember it.
+        // Storage unavailable — still reveal once, just don't remember it.
       }
     }
-    // Deferred via timers (which, unlike rAF, still fire in background tabs) so we
-    // never call setState synchronously in the effect body and never stall the reveal.
-    const startTimer = window.setTimeout(() => setPhase(play ? "intro" : "done"), 60);
-    const doneTimer = play
-      ? window.setTimeout(() => setPhase("done"), INTRO_MS)
-      : 0;
-    return () => {
-      window.clearTimeout(startTimer);
-      if (doneTimer) window.clearTimeout(doneTimer);
-    };
+    // Timer (fires in background tabs, unlike rAF) — no sync setState in the effect body.
+    const timer = window.setTimeout(() => {
+      setReveal(play ? "full" : "instant");
+      setPhase("done");
+    }, 40);
+    return () => window.clearTimeout(timer);
   }, [reduceMotion]);
-
-  // Pause the ambient steam whenever the hero is offscreen (no work while scrolled away).
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el || typeof IntersectionObserver === "undefined") return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        el.dataset.visible = entry.isIntersecting ? "true" : "false";
-      },
-      { threshold: 0.04 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
 
   const heroLines =
     language === "ru"
@@ -76,14 +54,13 @@ export function SteakRevealHero() {
       ? "Стейк на чёрном камне в тёплом ресторанном свете"
       : "Жылы мейрамхана жарығындағы қара тас үстіндегі стейк";
 
-  const showIntro = phase === "intro" && !reduceMotion;
+  const playingSweep = phase === "done" && reveal === "full" && !reduceMotion;
 
   return (
     <section
-      ref={sectionRef}
       className="steak-hero"
       data-phase={phase}
-      data-visible="true"
+      data-reveal={reveal}
       aria-labelledby="hero-title"
     >
       <div className="hero-panel steak-hero-panel">
@@ -103,29 +80,8 @@ export function SteakRevealHero() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={IMAGE_SRC} alt={alt} className="steak-noscript" />
           </noscript>
-
-          {showIntro ? (
-            <div className="steak-petals">
-              {petals.map((n) => (
-                <span
-                  key={n}
-                  className={`steak-petal steak-petal--${n}`}
-                  style={{ backgroundImage: `url(${IMAGE_SRC})` }}
-                />
-              ))}
-            </div>
-          ) : null}
-
           <div className="steak-scrim" />
-
-          {showIntro ? <div className="steak-sweep" /> : null}
-
-          {phase === "done" && !reduceMotion ? (
-            <div className="steak-steam">
-              <span className="steak-steam-col steak-steam-col--1" />
-              <span className="steak-steam-col steak-steam-col--2" />
-            </div>
-          ) : null}
+          {playingSweep ? <div className="steak-sweep" /> : null}
         </div>
 
         <div className="steak-hero-content">
@@ -151,8 +107,8 @@ export function SteakRevealHero() {
                       initial={reduceMotion ? false : { y: "110%" }}
                       animate={{ y: 0 }}
                       transition={{
-                        delay: 0.15 + index * 0.09,
-                        duration: 0.75,
+                        delay: 0.14 + index * 0.08,
+                        duration: 0.7,
                         ease: [0.22, 1, 0.36, 1],
                       }}
                     >
@@ -163,9 +119,9 @@ export function SteakRevealHero() {
               </h1>
               <motion.div
                 className="hero-copy-row"
-                initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ delay: 0.42, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
               >
                 <p className="type-body-large">{d.home.heroBody}</p>
                 <div className="hero-actions">

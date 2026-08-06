@@ -489,14 +489,24 @@ a {
   filter: saturate(0.94) contrast(1.05) brightness(0.86);
 }
 
+/* Short premium reveal: opacity + a small scale settle, then fully static. */
 .steak-final {
   z-index: 1;
   opacity: 0;
+  transform: scale(1.025);
 }
 
-/* Seamless swap: after the unfold, the single optimized image is shown at full opacity. */
 .steak-hero[data-phase="done"] .steak-final {
   opacity: 1;
+  transform: none;
+}
+
+.steak-hero[data-reveal="full"] .steak-final {
+  transition: opacity 0.9s ease, transform 1.05s var(--ease-out);
+}
+
+.steak-hero[data-reveal="instant"] .steak-final {
+  transition: opacity 0.28s ease;
 }
 
 .steak-noscript {
@@ -505,39 +515,7 @@ a {
   z-index: 1;
   width: 100%;
   height: 100%;
-}
-
-/* Organic petal unfold — each wedge shows the correct part of the same image */
-.steak-petals {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-}
-
-.steak-petal {
-  position: absolute;
-  inset: 0;
-  background-repeat: no-repeat;
-  background-position: 52% 50%;
-  background-size: cover;
-  filter: saturate(0.94) contrast(1.05) brightness(0.86);
-  transform-origin: 55% 42%;
-  backface-visibility: hidden;
-  will-change: transform, opacity;
-  animation: steak-unfold 1s var(--ease-out) both;
-}
-
-.steak-petal--1 { clip-path: polygon(55% 42%, 30% 0, 78% 0); animation-delay: 0.04s; --r: -4deg; }
-.steak-petal--2 { clip-path: polygon(55% 42%, 78% 0, 100% 0, 100% 38%); animation-delay: 0.12s; --r: 5deg; }
-.steak-petal--3 { clip-path: polygon(55% 42%, 100% 38%, 100% 100%, 72% 100%); animation-delay: 0.2s; --r: 4deg; }
-.steak-petal--4 { clip-path: polygon(55% 42%, 72% 100%, 24% 100%); animation-delay: 0.28s; --r: -3deg; }
-.steak-petal--5 { clip-path: polygon(55% 42%, 24% 100%, 0 100%, 0 46%); animation-delay: 0.16s; --r: -5deg; }
-.steak-petal--6 { clip-path: polygon(55% 42%, 0 46%, 0 0, 30% 0); animation-delay: 0.08s; --r: 4deg; }
-
-@keyframes steak-unfold {
-  0% { opacity: 0; transform: scale(0.82) rotate(var(--r)); }
-  60% { opacity: 1; }
-  100% { opacity: 1; transform: none; }
+  opacity: 1;
 }
 
 /* Static scrim for text legibility over the photograph */
@@ -551,7 +529,7 @@ a {
     linear-gradient(0deg, rgba(9, 9, 9, 0.5), transparent 42%);
 }
 
-/* One-time warm crust highlight sweep */
+/* One-time warm crust highlight sweep (desktop reveal only) */
 .steak-sweep {
   position: absolute;
   inset: 0;
@@ -567,52 +545,13 @@ a {
   mix-blend-mode: screen;
   opacity: 0;
   transform: translateX(-120%);
-  animation: steak-sweep 950ms var(--ease-out) 820ms forwards;
+  animation: steak-sweep 950ms var(--ease-out) 420ms forwards;
 }
 
 @keyframes steak-sweep {
   0% { opacity: 0; transform: translateX(-120%); }
   30% { opacity: 1; }
   100% { opacity: 0; transform: translateX(120%); }
-}
-
-/* Two subtle steam columns — paused whenever the hero is offscreen */
-.steak-steam {
-  position: absolute;
-  z-index: 4;
-  top: 2%;
-  right: 8%;
-  width: min(38vw, 480px);
-  height: min(52vh, 500px);
-  pointer-events: none;
-  contain: layout paint;
-}
-
-.steak-steam-col {
-  position: absolute;
-  bottom: 0;
-  width: 42%;
-  height: 100%;
-  border-radius: 50%;
-  opacity: 0;
-  filter: blur(11px);
-  background: radial-gradient(ellipse 60% 78% at 50% 62%, rgba(240, 232, 216, 0.16), transparent 70%);
-  transform-origin: center bottom;
-  animation: steak-steam-rise 8s ease-in-out infinite;
-}
-
-.steak-steam-col--1 { left: 10%; }
-.steak-steam-col--2 { right: 6%; animation-duration: 9.6s; animation-delay: -3.4s; }
-
-.steak-hero[data-visible="false"] .steak-steam-col {
-  animation-play-state: paused;
-}
-
-@keyframes steak-steam-rise {
-  0% { opacity: 0; transform: translateY(18px) scale(0.9); }
-  24% { opacity: 0.45; }
-  60% { opacity: 0.3; }
-  100% { opacity: 0; transform: translateY(-30px) scale(1.16); }
 }
 
 .hero-panel::after,
@@ -1699,16 +1638,14 @@ a {
   }
 
   .steak-final,
-  .steak-noscript,
-  .steak-petal {
+  .steak-noscript {
     object-position: 58% 50%;
-    background-position: 58% 50%;
   }
 }
 
 @media (max-width: 768px) {
   :root {
-    --page-pad: 0.75rem;
+    --page-pad: 0.9rem;
   }
 
   body {
@@ -1721,8 +1658,12 @@ a {
 
   .header-inner {
     grid-template-columns: 1fr auto;
-    min-height: 58px;
+    min-height: 54px;
     padding: 0.42rem 0.45rem 0.42rem 0.85rem;
+    /* Drop the heavy blur on mobile — use a near-opaque bg for smooth scrolling. */
+    background: rgba(17, 18, 19, 0.95);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   .desktop-nav,
@@ -1744,37 +1685,23 @@ a {
   }
 
   .steak-final,
-  .steak-noscript,
-  .steak-petal {
+  .steak-noscript {
     object-position: 63% 50%;
-    background-position: 63% 50%;
   }
 
-  /* Mobile: 4 simplified segments (hide the two extra wedges, retile with four) */
-  .steak-petal--5,
-  .steak-petal--6 {
-    display: none;
+  /* Mobile: even smaller scale settle, no highlight sweep */
+  .steak-hero[data-reveal="full"] .steak-final {
+    transform: scale(1.015);
+    transition: opacity 0.55s ease, transform 0.6s var(--ease-out);
   }
 
-  .steak-petal--1 { clip-path: polygon(52% 44%, 50% 0, 100% 0, 100% 50%); --r: 4deg; animation-delay: 0.04s; }
-  .steak-petal--2 { clip-path: polygon(52% 44%, 100% 50%, 100% 100%, 50% 100%); --r: -3deg; animation-delay: 0.14s; }
-  .steak-petal--3 { clip-path: polygon(52% 44%, 50% 100%, 0 100%, 0 50%); --r: 3deg; animation-delay: 0.1s; }
-  .steak-petal--4 { clip-path: polygon(52% 44%, 0 50%, 0 0, 50% 0); --r: -4deg; animation-delay: 0.06s; }
-
-  .steak-steam {
-    top: 6%;
-    right: 2%;
-    width: 62vw;
-    height: 40vh;
-  }
-
-  .steak-steam-col--2 {
+  .steak-sweep {
     display: none;
   }
 
   .hero-panel {
-    min-height: calc(100svh - 5.4rem);
-    padding: 1rem 1rem 5.25rem;
+    min-height: calc(82svh - 4.65rem);
+    padding: 1rem 1rem 3.75rem;
     border-radius: 17px;
   }
 
@@ -1786,13 +1713,13 @@ a {
   }
 
   .hero-t {
-    top: 40%;
-    right: -0.12em;
-    font-size: clamp(22rem, 105vw, 32rem);
+    top: 42%;
+    right: -0.1em;
+    font-size: clamp(15rem, 74vw, 22rem);
   }
 
   .hero-topline {
-    font-size: 0.58rem;
+    font-size: 0.6rem;
   }
 
   .hero-topline > p:nth-child(2) {
@@ -1802,7 +1729,7 @@ a {
   .hero-content {
     grid-template-columns: 1fr;
     align-content: end;
-    padding: 9vh 0 4vh;
+    padding: 4vh 0 2vh;
   }
 
   .hero-index {
@@ -1810,17 +1737,17 @@ a {
   }
 
   .hero-title {
-    line-height: 0.91;
+    line-height: 1.02;
   }
 
   .hero-copy-row {
-    gap: 1.4rem;
-    margin-top: 1.6rem;
+    gap: 1rem;
+    margin-top: 1.1rem;
   }
 
   .hero-copy-row > p {
-    max-width: 30ch;
-    font-size: 0.82rem;
+    max-width: 34ch;
+    font-size: 0.9rem;
   }
 
   .hero-actions .cta {
@@ -1843,8 +1770,8 @@ a {
   }
 
   .statement-section {
-    padding-top: 7rem;
-    padding-bottom: 8rem;
+    padding-top: 3.75rem;
+    padding-bottom: 4rem;
   }
 
   .statement-grid,
@@ -1857,39 +1784,35 @@ a {
   }
 
   .statement-grid {
-    gap: 2.2rem;
-  }
-
-  .statement-grid h2 {
-    font-size: clamp(3.2rem, 15vw, 5.8rem);
+    gap: 1.25rem;
   }
 
   .statement-note {
     grid-column: 1;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
   }
 
   .section-heading-grid {
-    gap: 1.4rem;
-    padding-bottom: 2.4rem;
+    gap: 1rem;
+    padding-bottom: 1.6rem;
   }
 
   .section-heading-grid h2 {
-    font-size: clamp(3rem, 13vw, 5rem);
+    font-size: clamp(1.7rem, 7vw, 2.3rem);
   }
 
   .dish-row {
-    grid-template-columns: 38px 1fr auto;
+    grid-template-columns: 30px 1fr auto;
     gap: 0.75rem;
-    min-height: 118px;
+    min-height: 88px;
   }
 
   .dish-row h3 {
-    font-size: clamp(1.85rem, 8vw, 2.8rem);
+    font-size: clamp(1.25rem, 5.4vw, 1.65rem);
   }
 
   .dish-orbit {
-    width: 58px;
+    width: 46px;
   }
 
   .dish-mark {
@@ -1897,8 +1820,8 @@ a {
   }
 
   .offer-panel {
-    min-height: 650px;
-    padding: 1rem;
+    min-height: 0;
+    padding: 1.25rem 1rem;
     border-radius: 17px;
   }
 
@@ -1909,22 +1832,22 @@ a {
   }
 
   .offer-content {
-    min-height: 555px;
-    gap: 2rem;
-    padding: 4rem 0 3rem;
+    min-height: 0;
+    gap: 1.25rem;
+    padding: 2rem 0 1.5rem;
   }
 
   .offer-price {
-    font-size: clamp(5.3rem, 25vw, 8rem);
+    font-size: clamp(3.2rem, 16vw, 4.4rem);
   }
 
   .offer-copy h2 {
-    font-size: clamp(2.7rem, 12vw, 4.3rem);
+    font-size: clamp(1.6rem, 6.6vw, 2.2rem);
   }
 
   .offer-copy p {
-    margin: 1.2rem 0 1.5rem;
-    font-size: 0.82rem;
+    margin: 0.9rem 0 1.25rem;
+    font-size: 0.9rem;
   }
 
   .offer-code {
@@ -1933,12 +1856,12 @@ a {
   }
 
   .about-section {
-    padding-top: 8rem;
-    padding-bottom: 8rem;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
   }
 
   .about-grid {
-    gap: 3rem;
+    gap: 1.5rem;
   }
 
   .about-grid > div {
@@ -1947,25 +1870,25 @@ a {
   }
 
   .about-number {
-    font-size: 6rem;
+    font-size: 3.2rem;
   }
 
   .about-grid h2 {
-    font-size: clamp(2.2rem, 10vw, 3.5rem);
+    font-size: clamp(1.6rem, 6.6vw, 2.2rem);
   }
 
   .reservation-inner {
-    gap: 4rem;
-    padding-top: 7rem;
-    padding-bottom: 9rem;
+    gap: 2rem;
+    padding-top: 4rem;
+    padding-bottom: 5rem;
   }
 
   .reservation-intro h2 {
-    font-size: clamp(3.6rem, 15vw, 6rem);
+    font-size: clamp(1.9rem, 8vw, 2.6rem);
   }
 
   .final-word {
-    font-size: 21.5vw;
+    font-size: 20vw;
   }
 
   .site-footer {
@@ -1987,7 +1910,7 @@ a {
   .page-hero,
   .booking-hero {
     grid-template-columns: 1fr;
-    min-height: calc(100svh - 5.4rem);
+    min-height: calc(72svh - 4.65rem);
     padding: 1.1rem;
     border-radius: 17px;
   }
@@ -1998,17 +1921,17 @@ a {
 
   .page-hero-main {
     align-self: end;
-    padding-bottom: 7rem;
+    padding-bottom: 3.5rem;
   }
 
   .page-title,
   .booking-hero .page-title {
-    font-size: clamp(4rem, 17vw, 6.5rem);
+    font-size: clamp(2rem, 9vw, 2.8rem);
   }
 
   .page-intro {
-    margin-top: 2rem;
-    font-size: 0.85rem;
+    margin-top: 1.25rem;
+    font-size: 0.9rem;
   }
 
   .page-scroll {
@@ -2018,12 +1941,12 @@ a {
 
   .menu-hero-mark,
   .booking-hero-mark {
-    font-size: 95vw;
+    font-size: 60vw;
   }
 
   .menu-catalog {
-    padding-top: 7rem;
-    padding-bottom: 7rem;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
   }
 
   .menu-category-header {
@@ -2063,12 +1986,12 @@ a {
 
   .booking-hero-copy {
     align-self: end;
-    padding: 0 0 9rem;
+    padding: 0 0 4.5rem;
   }
 
   .booking-meta {
     right: 1.1rem;
-    bottom: 5rem;
+    bottom: 3.25rem;
     left: 1.1rem;
     justify-content: space-between;
     gap: 1rem;
@@ -2095,10 +2018,6 @@ a {
 @media (max-width: 480px) {
   .hero-topline > p:first-child {
     max-width: 135px;
-  }
-
-  .hero-title {
-    font-size: clamp(2.85rem, 14vw, 4.1rem);
   }
 
   .hero-actions {
@@ -2192,10 +2111,8 @@ a {
   }
 
   .steak-final,
-  .steak-noscript,
-  .steak-petal {
+  .steak-noscript {
     object-position: 63% 50%;
-    background-position: 63% 50%;
   }
 }
 
@@ -2204,14 +2121,13 @@ a {
     scroll-behavior: auto;
   }
 
-  /* Reduced motion: show the finished steak immediately, no unfold/steam/sweep. */
+  /* Reduced motion: show the finished steak immediately, no scale/sweep. */
   .steak-final {
     opacity: 1 !important;
+    transform: none !important;
   }
 
-  .steak-petals,
-  .steak-sweep,
-  .steak-steam {
+  .steak-sweep {
     display: none !important;
   }
 
@@ -2505,17 +2421,18 @@ html[lang="kk"] .hero-title {
 
 @media (max-width: 768px) {
   :root {
-    --type-display-hero: clamp(3.05rem, 13.2vw, 5rem);
-    --type-page-title: clamp(2.8rem, 12.5vw, 4.8rem);
-    --type-editorial: clamp(3rem, 13.2vw, 5.4rem);
-    --type-section-title: clamp(2.25rem, 9.6vw, 3.7rem);
-    --type-menu-item: clamp(1.65rem, 7.4vw, 2.55rem);
-    --type-price: clamp(5rem, 23vw, 7.7rem);
-    --type-body-large: clamp(1rem, 4.1vw, 1.125rem);
+    /* Compact mobile type scale — intentional hierarchy, not a shrunk desktop. */
+    --type-display-hero: clamp(2.25rem, 10.6vw, 3rem);
+    --type-page-title: clamp(1.9rem, 8.4vw, 2.5rem);
+    --type-editorial: clamp(2rem, 8.6vw, 2.8rem);
+    --type-section-title: clamp(1.5rem, 6.4vw, 2rem);
+    --type-menu-item: clamp(1.35rem, 5.6vw, 1.85rem);
+    --type-price: clamp(3.25rem, 17vw, 4.6rem);
+    --type-body-large: clamp(0.95rem, 3.9vw, 1.05rem);
   }
 
   .hero-title {
-    line-height: 0.94;
+    line-height: 1.02;
   }
 
   .type-body-large,
@@ -3170,33 +3087,75 @@ html[lang="kk"] .hero-title {
 }
 
 @media (max-width: 768px) {
+  /* One compact horizontally-scrollable row; no heavy backdrop-filter on mobile. */
   .category-bar {
     top: 3.65rem;
-    flex-direction: column;
-    gap: 0.75rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.9rem;
+    padding: 0.55rem var(--page-pad);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--editorial);
+    scroll-padding-inline: var(--page-pad);
+  }
+
+  .category-bar::-webkit-scrollbar {
+    display: none;
   }
 
   .category-group {
-    align-items: baseline;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .category-chips {
+    overflow: visible;
+  }
+
+  .category-chip {
+    padding: 0.3rem 0.1rem 0.45rem;
+    font-size: 0.86rem;
   }
 
   .dish-item {
-    grid-template-columns: 1.6rem minmax(0, 1fr);
-    gap: 0.35rem 0.75rem;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    gap: 0.3rem 0.7rem;
+    padding: 0.9rem 0;
+  }
+
+  .dish-item-body h3 {
+    font-size: 1.02rem;
   }
 
   .dish-item-leader {
     display: none;
   }
 
-  .dish-item .dish-item-price {
+  .dish-item-actions {
     grid-column: 2;
-    justify-self: start;
-    margin-top: 0.35rem;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .menu-catalog-v2 {
+    padding-top: 2.5rem;
+  }
+
+  .menu-popular {
+    padding: 3rem 0 1.5rem;
+  }
+
+  .menu-offer {
+    padding: 1.5rem 0;
   }
 
   .menu-offer-price {
-    font-size: clamp(5rem, 26vw, 8rem);
+    font-size: clamp(3.2rem, 16vw, 4.4rem);
   }
 
   .catalog-head {

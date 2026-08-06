@@ -255,9 +255,14 @@ export function MenuPageClient() {
                         key={category.id}
                         className={`category-chip${isActive ? " is-active" : ""}`}
                         aria-pressed={isActive}
-                        onClick={() => {
+                        onClick={(event) => {
                           setQuery("");
                           setActiveCategory(category.id);
+                          event.currentTarget.scrollIntoView({
+                            inline: "center",
+                            block: "nearest",
+                            behavior: "smooth",
+                          });
                         }}
                       >
                         {category.title[language]}
