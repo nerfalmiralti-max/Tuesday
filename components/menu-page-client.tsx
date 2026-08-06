@@ -10,6 +10,7 @@ import {
 } from "framer-motion";
 import { ArrowDown, Search, X } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
+import { CartControls } from "@/components/cart-controls";
 import { Reveal } from "@/components/motion-reveal";
 import { CtaLink } from "@/components/site-shell";
 import { useLanguage } from "@/components/language-provider";
@@ -170,7 +171,7 @@ export function MenuPageClient() {
                 <h3>{item.name[language]}</h3>
                 <div className="popular-card-foot">
                   {renderPrice(item)}
-                  <span className="popular-card-mark">TUE</span>
+                  <CartControls itemId={item.id} tone="dark" />
                 </div>
               </motion.article>
             ))}
@@ -328,7 +329,10 @@ export function MenuPageClient() {
                         ) : null}
                       </div>
                       <span className="dish-item-leader" aria-hidden="true" />
-                      {renderPrice(item)}
+                      <div className="dish-item-actions">
+                        {renderPrice(item)}
+                        <CartControls itemId={item.id} />
+                      </div>
                     </motion.li>
                   ))}
                 </motion.ul>

@@ -29,6 +29,9 @@ test("renders menu and booking routes", async () => {
   const [menu, booking] = await Promise.all([render("/menu"), render("/booking")]);
   assert.equal(menu.status, 200);
   assert.equal(booking.status, 200);
-  assert.match(await menu.text(), /Бургер «Аль Капоне»/);
+  const menuHtml = await menu.text();
+  assert.match(menuHtml, /Бургер «Аль Капоне»/);
+  // Cart "Add" controls render server-side on the menu.
+  assert.match(menuHtml, /Добавить/);
   assert.match(await booking.text(), /Отправить заявку в WhatsApp/);
 });

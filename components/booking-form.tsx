@@ -1,8 +1,11 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, Info, MessageCircle } from "lucide-react";
+import { ArrowUpRight, Info, MessageCircle, Utensils } from "lucide-react";
+import Link from "next/link";
 import { FormEvent, useMemo, useRef, useState } from "react";
+import { CartControls } from "@/components/cart-controls";
+import { useCart } from "@/components/cart-provider";
 import { Reveal } from "@/components/motion-reveal";
 import { useLanguage } from "@/components/language-provider";
 import {
@@ -12,7 +15,9 @@ import {
   type BookingFormValues,
   type BookingValidationError,
 } from "@/lib/booking";
+import { whatsappDishLines } from "@/lib/cart";
 import { business } from "@/lib/business";
+import { formatPrice } from "@/lib/menu";
 import type { Language } from "@/lib/i18n";
 
 type ErrorState = Partial<
@@ -47,13 +52,17 @@ const availableTimes = timeOptions();
 
 export function BookingPageClient() {
   const { language, setLanguage, dictionary: d } = useLanguage();
+  const { items, entries, subtotal, remove, clear } = useCart();
   const reduceMotion = useReducedMotion();
   const formRef = useRef<HTMLFormElement>(null);
   const submissionLock = useRef(false);
   const [form, setForm] = useState<BookingFormValues>(initialForm);
   const [errors, setErrors] = useState<ErrorState>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [askClear, setAskClear] = useState(false);
   const today = useMemo(() => localDateString(), []);
+
+  const hasDishes = entries.length > 0;
 
   const update = (field: keyof BookingFormValues, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -81,13 +90,21 @@ export function BookingPageClient() {
 
     submissionLock.current = true;
     setIsLoading(true);
+    const cart =
+      items.length > 0
+        ? { lines: whatsappDishLines(items, language, d.cart.priceTbd), subtotal }
+        : undefined;
     const whatsappUrl = buildWhatsAppUrl(
       language,
       form,
       business.whatsapp.number,
+      cart,
     );
 
+    // Open a prefilled WhatsApp chat. The browser cannot confirm the user sent it,
+    // so the cart is preserved — we only offer to clear it after returning.
     window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+    if (cart) setAskClear(true);
 
     window.setTimeout(() => {
       submissionLock.current = false;
@@ -138,6 +155,66 @@ export function BookingPageClient() {
           </div>
         </div>
       </section>
+
+      {hasDishes ? (
+        <section className="booking-cart" aria-labelledby="booking-cart-title">
+          <Reveal className="booking-cart-inner">
+            <div className="booking-cart-head">
+              <p className="eyebrow type-label">{d.cart.preliminaryShort}</p>
+              <h2 id="booking-cart-title">{d.cart.selectedDishes}</h2>
+              <p className="booking-cart-note">{d.cart.preliminary}</p>
+            </div>
+
+            <ul className="booking-cart-list">
+              {entries.map((entry) => (
+                <li key={entry.id} className="booking-cart-line">
+                  <div className="booking-cart-line-main">
+                    <h3>{entry.item.name[language]}</h3>
+                    <p>
+                      {entry.item.volume ? <span>{entry.item.volume}</span> : null}
+                      <span>
+                        {entry.price === null
+                          ? d.cart.priceTbd
+                          : `${formatPrice(entry.price)} ₸`}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="booking-cart-line-side">
+                    <CartControls itemId={entry.id} />
+                    <span className="booking-cart-line-total">
+                      {entry.lineTotal === null
+                        ? d.cart.priceTbd
+                        : `${formatPrice(entry.lineTotal)} ₸`}
+                    </span>
+                    <button
+                      type="button"
+                      className="booking-cart-remove"
+                      onClick={() => remove(entry.id)}
+                      aria-label={`${d.cart.remove}: ${entry.item.name[language]}`}
+                    >
+                      {d.cart.remove}
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <div className="booking-cart-foot">
+              <div className="booking-cart-subtotal">
+                <span>{d.cart.subtotal}</span>
+                <strong>
+                  {subtotal > 0 ? `${formatPrice(subtotal)} ₸` : d.cart.priceTbd}
+                </strong>
+              </div>
+              <p className="booking-cart-confirm">{d.cart.confirmNotice}</p>
+              <Link className="cta cta--ghost booking-cart-more" href="/menu">
+                <Utensils size={16} aria-hidden="true" />
+                <span>{d.cart.addMore}</span>
+              </Link>
+            </div>
+          </Reveal>
+        </section>
+      ) : null}
 
       <section className="booking-form-section" aria-label={d.booking.eyebrow}>
         <Reveal className="booking-form-wrap">
@@ -268,6 +345,25 @@ export function BookingPageClient() {
                 <ArrowUpRight size={18} aria-hidden="true" />
               </button>
               <p>{d.booking.helper}</p>
+              {askClear && hasDishes ? (
+                <div className="booking-clear-ask" role="status">
+                  <span>{d.cart.keepAfterOpen}</span>
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        clear();
+                        setAskClear(false);
+                      }}
+                    >
+                      {d.cart.keepYes}
+                    </button>
+                    <button type="button" onClick={() => setAskClear(false)}>
+                      {d.cart.keepNo}
+                    </button>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </form>
         </Reveal>

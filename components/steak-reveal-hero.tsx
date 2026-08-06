@@ -9,7 +9,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { ArrowDown, ArrowUpRight, Clock3, MapPin } from "lucide-react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/language-provider";
 import { CtaLink } from "@/components/site-shell";
 import { business } from "@/lib/business";
@@ -147,6 +147,49 @@ function SteakSegment({
         zIndex: config.depth,
       }}
     />
+  );
+}
+
+const STEAK_INTRO_KEY = "tuesday-steak-intro-seen-v1";
+
+/** Cinematic aperture entrance that plays once per browser session. */
+function SteakIntro() {
+  const reduceMotion = useReducedMotion();
+  const [play, setPlay] = useState(false);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    let seen = false;
+    try {
+      seen = window.sessionStorage.getItem(STEAK_INTRO_KEY) === "1";
+    } catch {
+      seen = false;
+    }
+    if (seen) return;
+    try {
+      window.sessionStorage.setItem(STEAK_INTRO_KEY, "1");
+    } catch {
+      // Storage unavailable — animation still plays this once, just won't be remembered.
+    }
+    // Defer to a callback so we never call setState synchronously inside the effect body.
+    const raf = window.requestAnimationFrame(() => setPlay(true));
+    const timer = window.setTimeout(() => setPlay(false), 2100);
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+    };
+  }, [reduceMotion]);
+
+  if (!play) return null;
+
+  return (
+    <div className="steak-intro" aria-hidden="true">
+      <div className="steak-intro-vignette" />
+      {[1, 2, 3, 4, 5, 6].map((n) => (
+        <div key={n} className={`steak-petal steak-petal--${n}`} />
+      ))}
+      <div className="steak-crust-sweep" />
+    </div>
   );
 }
 
@@ -412,6 +455,8 @@ export function SteakRevealHero() {
             <span>OPEN</span>
             <i><motion.b style={reduceMotion ? undefined : { scaleX: progressScale }} /></i>
           </div>
+
+          <SteakIntro />
         </div>
       </div>
     </section>

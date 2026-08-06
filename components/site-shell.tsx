@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { CartDrawer } from "@/components/cart-drawer";
 import { useLanguage } from "@/components/language-provider";
 import { business } from "@/lib/business";
 import type { Language } from "@/lib/i18n";
@@ -252,6 +253,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <main id="main-content">{children}</main>
       <Footer />
       <MobileActionBar />
+      <CartDrawer />
     </>
   );
 }

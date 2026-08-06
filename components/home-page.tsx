@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { SteakRevealHero } from "@/components/steak-reveal-hero";
+import { CartControls } from "@/components/cart-controls";
 import { Reveal } from "@/components/motion-reveal";
 import { CtaLink } from "@/components/site-shell";
 import { useLanguage } from "@/components/language-provider";
@@ -52,7 +53,7 @@ export function HomePage() {
                     <span />
                   </div>
                 )}
-                <span className="dish-mark type-caption">TUE</span>
+                <CartControls itemId={item.id} />
               </motion.article>
             </Reveal>
           ))}

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Onest } from "next/font/google";
+import { CartProvider } from "@/components/cart-provider";
 import { LanguageProvider } from "@/components/language-provider";
 import { SiteShell } from "@/components/site-shell";
 import { siteUrl } from "@/lib/business";
@@ -59,7 +60,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ru" className={onest.variable} suppressHydrationWarning>
       <body>
         <LanguageProvider>
-          <SiteShell>{children}</SiteShell>
+          <CartProvider>
+            <SiteShell>{children}</SiteShell>
+          </CartProvider>
         </LanguageProvider>
       </body>
     </html>

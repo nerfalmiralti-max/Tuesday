@@ -1,4 +1,12 @@
 import type { Language } from "@/lib/i18n";
+import { formatPrice } from "@/lib/menu";
+
+export type BookingCart = {
+  /** Pre-formatted, numbered, localized dish lines. Empty when nothing selected. */
+  lines: string[];
+  /** Numeric subtotal from confirmed prices only; 0 when none are known. */
+  subtotal: number;
+};
 
 export type BookingField =
   | "name"
@@ -71,11 +79,13 @@ export function validateBooking(
 export function buildBookingMessage(
   language: Language,
   values: BookingFormValues,
+  cart?: BookingCart,
 ) {
   const comment = values.comment.trim();
+  const hasDishes = Boolean(cart && cart.lines.length > 0);
 
   if (language === "kk") {
-    return [
+    const lines = [
       "Сәлеметсіз бе! Tuesday Lounge Bar-да үстел брондағым келеді.",
       "",
       `Аты-жөні: ${values.name.trim()}`,
@@ -84,12 +94,19 @@ export function buildBookingMessage(
       `Уақыты: ${values.time}`,
       `Қонақтар саны: ${values.guests}`,
       `Қосымша ақпарат: ${comment || "Жоқ"}`,
-      "",
-      "Үстелдің бос екенін растаңызшы.",
-    ].join("\n");
+    ];
+    if (hasDishes && cart) {
+      lines.push("", "Алдын ала таңдалған тағамдар:", ...cart.lines);
+      if (cart.subtotal > 0) {
+        lines.push(`Мәзірдің алдын ала сомасы: ${formatPrice(cart.subtotal)} ₸`);
+      }
+      lines.push("", "Тағамдардың бар-жоғын және соңғы соманы мейрамхана растайды.");
+    }
+    lines.push("", "Үстелдің бос екенін растаңызшы.");
+    return lines.join("\n");
   }
 
-  return [
+  const lines = [
     "Здравствуйте! Хочу забронировать стол в Tuesday Lounge Bar.",
     "",
     `Имя: ${values.name.trim()}`,
@@ -98,16 +115,24 @@ export function buildBookingMessage(
     `Время: ${values.time}`,
     `Количество гостей: ${values.guests}`,
     `Комментарий: ${comment || "Нет"}`,
-    "",
-    "Подтвердите, пожалуйста, доступность стола.",
-  ].join("\n");
+  ];
+  if (hasDishes && cart) {
+    lines.push("", "Предварительно выбраны блюда:", ...cart.lines);
+    if (cart.subtotal > 0) {
+      lines.push(`Предварительная сумма меню: ${formatPrice(cart.subtotal)} ₸`);
+    }
+    lines.push("", "Наличие блюд и итоговую сумму подтверждает ресторан.");
+  }
+  lines.push("", "Подтвердите, пожалуйста, доступность стола.");
+  return lines.join("\n");
 }
 
 export function buildWhatsAppUrl(
   language: Language,
   values: BookingFormValues,
   whatsappNumber = "77057833130",
+  cart?: BookingCart,
 ) {
-  const message = buildBookingMessage(language, values);
+  const message = buildBookingMessage(language, values, cart);
   return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 }
