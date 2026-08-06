@@ -413,17 +413,8 @@ a {
   color: var(--amber);
 }
 
-.steak-sequence {
+.steak-hero {
   position: relative;
-  height: 195vh;
-  height: 195svh;
-}
-
-.steak-sticky {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100svh;
   padding: 5.6rem var(--page-pad) 1rem;
 }
 
@@ -447,17 +438,16 @@ a {
 }
 
 .steak-hero-panel {
-  height: 100%;
+  min-height: calc(100svh - 6.6rem);
 }
 
-.steak-hero-content-layer {
+.steak-hero-content {
   position: relative;
   z-index: 5;
   display: flex;
   flex: 1;
   flex-direction: column;
   min-height: 0;
-  will-change: opacity, transform;
 }
 
 .hero-brand-lockup {
@@ -481,193 +471,148 @@ a {
   letter-spacing: 0.16em;
 }
 
-.steak-central-glow {
-  position: absolute;
-  z-index: 4;
-  inset: 12% 4% 10% 42%;
-  pointer-events: none;
-  background: radial-gradient(ellipse, rgba(213, 166, 108, 0.42), rgba(182, 132, 77, 0.12) 34%, transparent 70%);
-  filter: blur(18px);
-}
-
-.steak-visual,
-.steak-base,
-.steak-segments,
-.steak-segment,
-.steak-image-shade {
+/* Steak frame: image layers behind the hero content */
+.steak-frame {
   position: absolute;
   inset: 0;
-}
-
-.steak-visual {
-  z-index: 2;
+  z-index: 0;
   overflow: hidden;
+  border-radius: inherit;
   pointer-events: none;
   background: #0c0b09;
-  transform-origin: 62% 58%;
 }
 
-.steak-base {
-  z-index: 1;
-}
-
-.steak-base-image {
+.steak-final,
+.steak-noscript {
   object-fit: cover;
   object-position: 52% 50%;
-  filter: saturate(0.92) contrast(1.06) brightness(0.84);
+  filter: saturate(0.94) contrast(1.05) brightness(0.86);
 }
 
-.steak-segments {
+.steak-final {
+  z-index: 1;
+  opacity: 0;
+}
+
+/* Seamless swap: after the unfold, the single optimized image is shown at full opacity. */
+.steak-hero[data-phase="done"] .steak-final {
+  opacity: 1;
+}
+
+.steak-noscript {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+/* Organic petal unfold — each wedge shows the correct part of the same image */
+.steak-petals {
+  position: absolute;
+  inset: 0;
   z-index: 2;
 }
 
-.steak-segments--mobile {
-  display: none;
-}
-
-.steak-segment {
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  background-image: url("/images/tuesday-steak-hero.webp");
+.steak-petal {
+  position: absolute;
+  inset: 0;
   background-repeat: no-repeat;
   background-position: 52% 50%;
   background-size: cover;
-  filter: saturate(0.92) contrast(1.06) brightness(0.84);
-  transform-origin: 52% 52%;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 100% 100%;
-  mask-repeat: no-repeat;
-  mask-size: 100% 100%;
+  filter: saturate(0.94) contrast(1.05) brightness(0.86);
+  transform-origin: 55% 42%;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  animation: steak-unfold 1s var(--ease-out) both;
 }
 
+.steak-petal--1 { clip-path: polygon(55% 42%, 30% 0, 78% 0); animation-delay: 0.04s; --r: -4deg; }
+.steak-petal--2 { clip-path: polygon(55% 42%, 78% 0, 100% 0, 100% 38%); animation-delay: 0.12s; --r: 5deg; }
+.steak-petal--3 { clip-path: polygon(55% 42%, 100% 38%, 100% 100%, 72% 100%); animation-delay: 0.2s; --r: 4deg; }
+.steak-petal--4 { clip-path: polygon(55% 42%, 72% 100%, 24% 100%); animation-delay: 0.28s; --r: -3deg; }
+.steak-petal--5 { clip-path: polygon(55% 42%, 24% 100%, 0 100%, 0 46%); animation-delay: 0.16s; --r: -5deg; }
+.steak-petal--6 { clip-path: polygon(55% 42%, 0 46%, 0 0, 30% 0); animation-delay: 0.08s; --r: 4deg; }
+
+@keyframes steak-unfold {
+  0% { opacity: 0; transform: scale(0.82) rotate(var(--r)); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: none; }
+}
+
+/* Static scrim for text legibility over the photograph */
+.steak-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(9, 9, 9, 0.92) 0%, rgba(9, 9, 9, 0.74) 26%, rgba(9, 9, 9, 0.24) 58%, rgba(9, 9, 9, 0.08) 100%),
+    linear-gradient(0deg, rgba(9, 9, 9, 0.5), transparent 42%);
+}
+
+/* One-time warm crust highlight sweep */
+.steak-sweep {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 42%,
+    rgba(255, 236, 205, 0.14) 50%,
+    rgba(213, 166, 108, 0.12) 54%,
+    transparent 63%
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+  transform: translateX(-120%);
+  animation: steak-sweep 950ms var(--ease-out) 820ms forwards;
+}
+
+@keyframes steak-sweep {
+  0% { opacity: 0; transform: translateX(-120%); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(120%); }
+}
+
+/* Two subtle steam columns — paused whenever the hero is offscreen */
 .steak-steam {
   position: absolute;
-  z-index: 10;
-  top: 3%;
-  right: 7%;
-  width: min(44vw, 670px);
-  height: min(58vh, 560px);
-  overflow: hidden;
+  z-index: 4;
+  top: 2%;
+  right: 8%;
+  width: min(38vw, 480px);
+  height: min(52vh, 500px);
   pointer-events: none;
   contain: layout paint;
 }
 
-.steak-steam svg {
-  width: 100%;
+.steak-steam-col {
+  position: absolute;
+  bottom: 0;
+  width: 42%;
   height: 100%;
-  overflow: visible;
-}
-
-.steak-steam-path {
+  border-radius: 50%;
   opacity: 0;
-  transform-box: fill-box;
+  filter: blur(11px);
+  background: radial-gradient(ellipse 60% 78% at 50% 62%, rgba(240, 232, 216, 0.16), transparent 70%);
   transform-origin: center bottom;
-  animation: steak-steam-rise 7.2s cubic-bezier(0.42, 0, 0.3, 1) infinite;
+  animation: steak-steam-rise 8s ease-in-out infinite;
 }
 
-.steak-steam-path--2 {
-  animation-duration: 8.6s;
-  animation-delay: -3.2s;
-}
+.steak-steam-col--1 { left: 10%; }
+.steak-steam-col--2 { right: 6%; animation-duration: 9.6s; animation-delay: -3.4s; }
 
-.steak-steam-path--3 {
-  animation-duration: 6.4s;
-  animation-delay: -5.1s;
-}
-
-.steak-steam-path--4 {
-  animation-duration: 9s;
-  animation-delay: -1.8s;
+.steak-hero[data-visible="false"] .steak-steam-col {
+  animation-play-state: paused;
 }
 
 @keyframes steak-steam-rise {
-  0% {
-    opacity: 0;
-    transform: translate3d(-2px, 14px, 0) scale(0.88, 0.82);
-  }
-  22% {
-    opacity: 0.34;
-  }
-  62% {
-    opacity: 0.22;
-    transform: translate3d(4px, -8px, 0) scale(1.04, 1.1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate3d(-5px, -34px, 0) scale(1.14, 1.24);
-  }
-}
-
-.steak-image-shade {
-  z-index: 8;
-  background:
-    linear-gradient(90deg, rgba(9, 9, 9, 0.94) 0%, rgba(9, 9, 9, 0.78) 26%, rgba(9, 9, 9, 0.25) 58%, rgba(9, 9, 9, 0.12) 100%),
-    linear-gradient(0deg, rgba(9, 9, 9, 0.52), transparent 44%);
-}
-
-.steak-handoff {
-  position: absolute;
-  z-index: 3;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: var(--page-pad);
-  pointer-events: none;
-  background: var(--editorial);
-  color: var(--ink);
-}
-
-.steak-handoff > div {
-  width: min(1040px, 88vw);
-}
-
-.steak-handoff span {
-  display: block;
-  margin-bottom: 1.5rem;
-  color: var(--amber);
-  font-size: var(--type-meta);
-  font-weight: 620;
-  letter-spacing: 0.08em;
-}
-
-.steak-handoff p {
-  margin: 0;
-  font-size: var(--type-editorial);
-  font-weight: 690;
-  line-height: 0.92;
-  letter-spacing: -0.045em;
-  text-wrap: balance;
-}
-
-.steak-progress {
-  position: absolute;
-  z-index: 7;
-  right: clamp(1rem, 2.4vw, 2.4rem);
-  bottom: 5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: var(--muted-light);
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-}
-
-.steak-progress i {
-  position: relative;
-  display: block;
-  width: clamp(70px, 8vw, 120px);
-  height: 1px;
-  overflow: hidden;
-  background: var(--line-light);
-}
-
-.steak-progress b {
-  position: absolute;
-  inset: 0;
-  display: block;
-  background: var(--amber-bright);
-  transform-origin: left;
+  0% { opacity: 0; transform: translateY(18px) scale(0.9); }
+  24% { opacity: 0.45; }
+  60% { opacity: 0.3; }
+  100% { opacity: 0; transform: translateY(-30px) scale(1.16); }
 }
 
 .hero-panel::after,
@@ -1753,8 +1698,9 @@ a {
     grid-template-columns: 20% 1fr;
   }
 
-  .steak-base-image,
-  .steak-segment {
+  .steak-final,
+  .steak-noscript,
+  .steak-petal {
     object-position: 58% 50%;
     background-position: 58% 50%;
   }
@@ -1792,57 +1738,38 @@ a {
     display: grid;
   }
 
-  .steak-sticky,
+  .steak-hero,
   .inner-page {
     padding-top: 4.65rem;
   }
 
-  .steak-sequence {
-    height: 165vh;
-    height: 165svh;
-  }
-
-  .steak-segments--desktop {
-    display: none;
-  }
-
-  .steak-segments--mobile {
-    display: block;
-  }
-
-  .steak-base-image,
-  .steak-segment {
+  .steak-final,
+  .steak-noscript,
+  .steak-petal {
     object-position: 63% 50%;
     background-position: 63% 50%;
   }
 
-  .steak-steam {
-    top: 16%;
-    right: -2%;
-    width: 70vw;
-    height: 42vh;
-  }
-
-  .steak-steam-path {
-    filter: blur(0.5px);
-  }
-
-  .steak-steam-path--4 {
+  /* Mobile: 4 simplified segments (hide the two extra wedges, retile with four) */
+  .steak-petal--5,
+  .steak-petal--6 {
     display: none;
   }
 
-  .steak-central-glow {
-    inset: 24% -12% 17% 35%;
-    filter: blur(10px);
+  .steak-petal--1 { clip-path: polygon(52% 44%, 50% 0, 100% 0, 100% 50%); --r: 4deg; animation-delay: 0.04s; }
+  .steak-petal--2 { clip-path: polygon(52% 44%, 100% 50%, 100% 100%, 50% 100%); --r: -3deg; animation-delay: 0.14s; }
+  .steak-petal--3 { clip-path: polygon(52% 44%, 50% 100%, 0 100%, 0 50%); --r: 3deg; animation-delay: 0.1s; }
+  .steak-petal--4 { clip-path: polygon(52% 44%, 0 50%, 0 0, 50% 0); --r: -4deg; animation-delay: 0.06s; }
+
+  .steak-steam {
+    top: 6%;
+    right: 2%;
+    width: 62vw;
+    height: 40vh;
   }
 
-  .steak-handoff > div {
-    width: 88vw;
-  }
-
-  .steak-progress {
-    right: 1rem;
-    bottom: 5.1rem;
+  .steak-steam-col--2 {
+    display: none;
   }
 
   .hero-panel {
@@ -2243,15 +2170,6 @@ a {
 
 @media (max-width: 768px) and (orientation: landscape),
   (max-height: 520px) and (orientation: landscape) {
-  .steak-sequence {
-    height: 150vh;
-    height: 150svh;
-  }
-
-  .steak-sticky {
-    padding-top: 4.25rem;
-  }
-
   .hero-panel {
     min-height: calc(100svh - 4.75rem);
     padding-bottom: 3.8rem;
@@ -2273,22 +2191,11 @@ a {
     display: none;
   }
 
-  .steak-segments--desktop {
-    display: none;
-  }
-
-  .steak-segments--mobile {
-    display: block;
-  }
-
-  .steak-base-image,
-  .steak-segment {
+  .steak-final,
+  .steak-noscript,
+  .steak-petal {
     object-position: 63% 50%;
     background-position: 63% 50%;
-  }
-
-  .steak-progress {
-    bottom: 3.7rem;
   }
 }
 
@@ -2297,50 +2204,20 @@ a {
     scroll-behavior: auto;
   }
 
-  .steak-sequence {
-    height: auto;
+  /* Reduced motion: show the finished steak immediately, no unfold/steam/sweep. */
+  .steak-final {
+    opacity: 1 !important;
   }
 
-  .steak-sticky {
-    position: relative;
-    height: auto;
-    min-height: 100vh;
-    min-height: 100svh;
+  .steak-petals,
+  .steak-sweep,
+  .steak-steam {
+    display: none !important;
   }
 
-  .steak-segments,
-  .steak-handoff,
-  .steak-progress {
-    display: none;
-  }
-
-  .steak-base,
-  .steak-hero-content-layer,
   .hero-meta {
     opacity: 1 !important;
     transform: none !important;
-  }
-
-  .steak-image-shade {
-    opacity: 0.42 !important;
-  }
-
-  .steak-central-glow {
-    opacity: 0.18 !important;
-  }
-
-  .steak-steam {
-    opacity: 0.14 !important;
-  }
-
-  .steak-steam-path {
-    animation: none !important;
-    opacity: 0.16;
-    transform: none;
-  }
-
-  .steak-steam-path:not(.steak-steam-path--2) {
-    display: none;
   }
 
   *,
@@ -3974,83 +3851,6 @@ body.has-cart-bar {
   /* Keep the sticky mobile bar from covering the last content. */
 }
 
-/* ============================================================
-   Steak cinematic entrance (session-gated, once per session)
-   ============================================================ */
-.steak-intro {
-  position: absolute;
-  inset: 0;
-  z-index: 40;
-  overflow: hidden;
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-.steak-intro-vignette {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 60% 55% at 60% 45%, rgba(182, 132, 77, 0.22), transparent 60%),
-    radial-gradient(circle at 50% 50%, transparent 45%, rgba(6, 6, 7, 0.55) 100%);
-  animation: steak-vignette 1600ms var(--ease-out) forwards;
-}
-
-@keyframes steak-vignette {
-  0% { opacity: 0; }
-  22% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-.steak-petal {
-  position: absolute;
-  top: -20%;
-  left: -20%;
-  width: 140%;
-  height: 140%;
-  background: var(--ink);
-  transform-origin: 60% 45%;
-  will-change: transform, opacity;
-  animation: steak-petal 1150ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.steak-petal--1 { border-radius: 0 100% 100% 0 / 0 60% 60% 0; --tx: -46%; --ty: -30%; --rot: -8deg; animation-delay: 250ms; }
-.steak-petal--2 { border-radius: 100% 0 0 100% / 60% 0 0 60%; --tx: 44%; --ty: -34%; --rot: 7deg; animation-delay: 300ms; }
-.steak-petal--3 { border-radius: 100% 100% 0 0 / 60% 60% 0 0; --tx: 40%; --ty: 40%; --rot: 6deg; animation-delay: 350ms; }
-.steak-petal--4 { border-radius: 0 0 100% 100% / 0 0 60% 60%; --tx: -42%; --ty: 42%; --rot: -6deg; animation-delay: 400ms; }
-.steak-petal--5 { border-radius: 100% 0 100% 0 / 55% 0 55% 0; --tx: 8%; --ty: -48%; --rot: 4deg; animation-delay: 200ms; }
-.steak-petal--6 { border-radius: 0 100% 0 100% / 0 55% 0 55%; --tx: 6%; --ty: 48%; --rot: -5deg; animation-delay: 450ms; }
-
-@keyframes steak-petal {
-  0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
-  55% { opacity: 1; }
-  100% {
-    transform: translate(var(--tx), var(--ty)) scale(1.15) rotate(var(--rot));
-    opacity: 0;
-  }
-}
-
-.steak-crust-sweep {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    115deg,
-    transparent 40%,
-    rgba(255, 236, 205, 0.16) 50%,
-    rgba(213, 166, 108, 0.14) 54%,
-    transparent 64%
-  );
-  mix-blend-mode: screen;
-  transform: translateX(-120%);
-  animation: steak-crust-sweep 1100ms cubic-bezier(0.22, 1, 0.36, 1) 780ms forwards;
-  opacity: 0;
-}
-
-@keyframes steak-crust-sweep {
-  0% { transform: translateX(-120%); opacity: 0; }
-  25% { opacity: 1; }
-  100% { transform: translateX(120%); opacity: 0; }
-}
-
 /* ── Cart responsive ───────────────────────────────────── */
 @media (max-width: 1024px) {
   .booking-cart-line {
@@ -4101,13 +3901,3 @@ body.has-cart-bar {
   }
 }
 
-/* ── Cart reduced motion ───────────────────────────────── */
-@media (prefers-reduced-motion: reduce) {
-  .steak-intro,
-  .steak-intro-vignette,
-  .steak-petal,
-  .steak-crust-sweep {
-    animation: none !important;
-    opacity: 0 !important;
-  }
-}
