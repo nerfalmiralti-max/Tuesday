@@ -482,40 +482,45 @@ a {
   background: #0c0b09;
 }
 
-.steak-final,
-.steak-noscript {
+.steak-final {
   object-fit: cover;
   object-position: 52% 50%;
   filter: saturate(0.94) contrast(1.05) brightness(0.86);
 }
 
-/* Short premium reveal: opacity + a small scale settle, then fully static. */
+/*
+ * The image is visible by default — if JS or sessionStorage fail, it simply shows.
+ * The entrance is driven purely by CSS via a data attribute set on <html> by a tiny
+ * pre-paint script, so it starts automatically and never leaves the image hidden.
+ */
 .steak-final {
   z-index: 1;
-  opacity: 0;
-  transform: scale(1.025);
-}
-
-.steak-hero[data-phase="done"] .steak-final {
   opacity: 1;
-  transform: none;
 }
 
-.steak-hero[data-reveal="full"] .steak-final {
-  transition: opacity 0.9s ease, transform 1.05s var(--ease-out);
+/* First visit this session: full premium reveal (opacity + translateY + scale settle). */
+:root[data-steak-intro="full"] .steak-final {
+  animation: steak-in 1050ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.steak-hero[data-reveal="instant"] .steak-final {
-  transition: opacity 0.28s ease;
+/* Later visits: a short refined fade. */
+:root[data-steak-intro="short"] .steak-final {
+  animation: steak-in-short 260ms ease both;
 }
 
-.steak-noscript {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  opacity: 1;
+@keyframes steak-in {
+  from { opacity: 0; transform: translateY(20px) scale(1.04); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes steak-in-short {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes steak-in-mobile {
+  from { opacity: 0; transform: translateY(12px) scale(1.025); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* Static scrim for text legibility over the photograph */
@@ -529,23 +534,48 @@ a {
     linear-gradient(0deg, rgba(9, 9, 9, 0.5), transparent 42%);
 }
 
-/* One-time warm crust highlight sweep (desktop reveal only) */
+/* Warm darkness overlay that lifts as the steak settles (full reveal only) */
+.steak-warm {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 60% 45%, rgba(70, 40, 14, 0.32), transparent 70%),
+    linear-gradient(0deg, rgba(6, 5, 4, 0.4), transparent 60%);
+}
+
+:root[data-steak-intro="full"] .steak-warm {
+  animation: steak-warm-out 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes steak-warm-out {
+  0% { opacity: 0.55; }
+  60% { opacity: 0.28; }
+  100% { opacity: 0; }
+}
+
+/* One-time warm crust highlight sweep (full desktop reveal only) */
 .steak-sweep {
   position: absolute;
   inset: 0;
   z-index: 5;
   pointer-events: none;
+  opacity: 0;
   background: linear-gradient(
     115deg,
     transparent 42%,
-    rgba(255, 236, 205, 0.14) 50%,
-    rgba(213, 166, 108, 0.12) 54%,
+    rgba(255, 236, 205, 0.16) 50%,
+    rgba(213, 166, 108, 0.13) 54%,
     transparent 63%
   );
   mix-blend-mode: screen;
-  opacity: 0;
   transform: translateX(-120%);
-  animation: steak-sweep 950ms var(--ease-out) 420ms forwards;
+}
+
+:root[data-steak-intro="full"] .steak-sweep {
+  animation: steak-sweep 900ms cubic-bezier(0.22, 1, 0.36, 1) 640ms both;
 }
 
 @keyframes steak-sweep {
@@ -1637,8 +1667,7 @@ a {
     grid-template-columns: 20% 1fr;
   }
 
-  .steak-final,
-  .steak-noscript {
+  .steak-final {
     object-position: 58% 50%;
   }
 }
@@ -1684,15 +1713,17 @@ a {
     padding-top: 4.65rem;
   }
 
-  .steak-final,
-  .steak-noscript {
+  .steak-final {
     object-position: 63% 50%;
   }
 
-  /* Mobile: even smaller scale settle, no highlight sweep */
-  .steak-hero[data-reveal="full"] .steak-final {
-    transform: scale(1.015);
-    transition: opacity 0.55s ease, transform 0.6s var(--ease-out);
+  /* Mobile: lighter reveal — shorter, smaller scale/lift, no sweep. */
+  :root[data-steak-intro="full"] .steak-final {
+    animation: steak-in-mobile 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  :root[data-steak-intro="full"] .steak-warm {
+    animation-duration: 650ms;
   }
 
   .steak-sweep {
@@ -2110,8 +2141,7 @@ a {
     display: none;
   }
 
-  .steak-final,
-  .steak-noscript {
+  .steak-final {
     object-position: 63% 50%;
   }
 }
@@ -2121,12 +2151,14 @@ a {
     scroll-behavior: auto;
   }
 
-  /* Reduced motion: show the finished steak immediately, no scale/sweep. */
+  /* Reduced motion: show the finished steak immediately, no reveal/warm/sweep. */
   .steak-final {
     opacity: 1 !important;
     transform: none !important;
+    animation: none !important;
   }
 
+  .steak-warm,
   .steak-sweep {
     display: none !important;
   }

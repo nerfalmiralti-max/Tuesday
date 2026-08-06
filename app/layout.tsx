@@ -59,6 +59,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ru" className={onest.variable} suppressHydrationWarning>
       <body>
+        {/*
+          Pre-paint, session-gated flag for the homepage steak entrance. Runs before
+          hydration so the CSS reveal starts with no flash; failure leaves the image
+          visible (it never hides the steak). Only affects "/".
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{if(location.pathname==='/'){var k='tuesday-steak-intro-seen-v4';var s=sessionStorage.getItem(k);document.documentElement.setAttribute('data-steak-intro',s?'short':'full');if(!s){sessionStorage.setItem(k,'1');}}}catch(e){}})();",
+          }}
+        />
         <LanguageProvider>
           <CartProvider>
             <SiteShell>{children}</SiteShell>

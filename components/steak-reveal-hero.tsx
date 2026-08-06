@@ -3,46 +3,22 @@
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowUpRight, Clock3, MapPin } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useLanguage } from "@/components/language-provider";
 import { CtaLink } from "@/components/site-shell";
 import { business } from "@/lib/business";
 
-const INTRO_KEY = "tuesday-steak-intro-seen-v3";
 const IMAGE_SRC = "/images/tuesday-steak-hero.webp";
 
-type Phase = "loading" | "done";
-type Reveal = "full" | "instant";
-
+/*
+ * The steak entrance is driven entirely by CSS, keyed off a `data-steak-intro`
+ * attribute set on <html> by a tiny pre-paint script in the root layout. That means:
+ *  - the image is visible by default (if JS/sessionStorage fail, it simply shows);
+ *  - the reveal starts automatically before hydration, with no flash and no lag;
+ *  - nothing here runs timers, rAF, scroll or pointer listeners.
+ */
 export function SteakRevealHero() {
   const { language, dictionary: d } = useLanguage();
   const reduceMotion = useReducedMotion();
-  const [phase, setPhase] = useState<Phase>("loading");
-  const [reveal, setReveal] = useState<Reveal>("full");
-
-  // Decide the entrance once (client only). Never navigates — it only reveals.
-  useEffect(() => {
-    let seen = false;
-    try {
-      seen = window.sessionStorage.getItem(INTRO_KEY) === "1";
-    } catch {
-      seen = false;
-    }
-    const play = !seen && !reduceMotion;
-    if (play) {
-      try {
-        window.sessionStorage.setItem(INTRO_KEY, "1");
-      } catch {
-        // Storage unavailable — still reveal once, just don't remember it.
-      }
-    }
-    // Timer (fires in background tabs, unlike rAF) — no sync setState in the effect body.
-    const timer = window.setTimeout(() => {
-      setReveal(play ? "full" : "instant");
-      setPhase("done");
-    }, 40);
-    return () => window.clearTimeout(timer);
-  }, [reduceMotion]);
 
   const heroLines =
     language === "ru"
@@ -54,15 +30,8 @@ export function SteakRevealHero() {
       ? "Стейк на чёрном камне в тёплом ресторанном свете"
       : "Жылы мейрамхана жарығындағы қара тас үстіндегі стейк";
 
-  const playingSweep = phase === "done" && reveal === "full" && !reduceMotion;
-
   return (
-    <section
-      className="steak-hero"
-      data-phase={phase}
-      data-reveal={reveal}
-      aria-labelledby="hero-title"
-    >
+    <section className="steak-hero" aria-labelledby="hero-title">
       <div className="hero-panel steak-hero-panel">
         <div className="hero-grid-lines" aria-hidden="true" />
 
@@ -76,12 +45,9 @@ export function SteakRevealHero() {
             sizes="(max-width: 768px) 100vw, 1600px"
             className="steak-final"
           />
-          <noscript>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={IMAGE_SRC} alt={alt} className="steak-noscript" />
-          </noscript>
+          <div className="steak-warm" />
           <div className="steak-scrim" />
-          {playingSweep ? <div className="steak-sweep" /> : null}
+          <div className="steak-sweep" />
         </div>
 
         <div className="steak-hero-content">
@@ -107,8 +73,8 @@ export function SteakRevealHero() {
                       initial={reduceMotion ? false : { y: "110%" }}
                       animate={{ y: 0 }}
                       transition={{
-                        delay: 0.14 + index * 0.08,
-                        duration: 0.7,
+                        delay: 0.35 + index * 0.09,
+                        duration: 0.72,
                         ease: [0.22, 1, 0.36, 1],
                       }}
                     >
@@ -121,7 +87,7 @@ export function SteakRevealHero() {
                 className="hero-copy-row"
                 initial={reduceMotion ? false : { opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.42, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ delay: 0.62, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
               >
                 <p className="type-body-large">{d.home.heroBody}</p>
                 <div className="hero-actions">
